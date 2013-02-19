@@ -121,7 +121,7 @@ class Interface(tk.Tk):
 		self.help_win.mainloop()
 
 	def inverse(self):
-		self.player *= -1
+		self.player *= BLACK_PLAYER
 		if self.player == WHITE_PLAYER:
 			self.current_player.configure(text = "Current Player: White")
 		elif self.player == BLACK_PLAYER:
@@ -239,13 +239,13 @@ class Board(tk.Canvas):  # réécrir les for comm avec draw piece
 			for l in range(len(board)):
 
 				if board[k][l] ==WHITE_PLAYER:
-					self.pawn[self.create_oval(self.rapport*i+5,self.rapport*j+5,self.rapport*i+self.rapport-5,self.rapport*j+self.rapport-5, outline = "white", fill = "white", width=2)] = [1, k, l]
+					self.pawn[self.create_oval(self.rapport*i+5,self.rapport*j+5,self.rapport*i+self.rapport-5,self.rapport*j+self.rapport-5, outline = "white", fill = "white", width=2)] = [WHITE_PLAYER, k, l]
 				elif board[k][l]==BLACK_PLAYER:
-					self.pawn[self.create_oval(self.rapport*i+5,self.rapport*j+5,self.rapport*i+self.rapport-5,self.rapport*j+self.rapport-5, outline = "white", fill = "Black", width=2)] = [-1, k, l]
+					self.pawn[self.create_oval(self.rapport*i+5,self.rapport*j+5,self.rapport*i+self.rapport-5,self.rapport*j+self.rapport-5, outline = "white", fill = "Black", width=2)] = [BLACK_PLAYER, k, l]
 				elif board[k][l]>0:
-					self.pawn[self.create_oval(self.rapport*i+5,self.rapport*j+5,self.rapport*i+self.rapport-5,self.rapport*j+self.rapport-5, outline = "red", fill = "white", width=5)] = [-1, k, l]
+					self.pawn[self.create_oval(self.rapport*i+5,self.rapport*j+5,self.rapport*i+self.rapport-5,self.rapport*j+self.rapport-5, outline = "red", fill = "white", width=5)] = [WHITE_PLAYER, k, l]
 				elif board[k][l]<0:
-					self.pawn[self.create_oval(self.rapport*i+5,self.rapport*j+5,self.rapport*i+self.rapport-5,self.rapport*j+self.rapport-5, outline = "red", fill = "black", width=5)] = [-1, k, l]
+					self.pawn[self.create_oval(self.rapport*i+5,self.rapport*j+5,self.rapport*i+self.rapport-5,self.rapport*j+self.rapport-5, outline = "red", fill = "black", width=5)] = [BLACK_PLAYER, k, l]
 				i+=1
 			i=0
 			j+=1
