@@ -19,13 +19,13 @@ class Interface(tk.Tk):
 		self.hasCaptured = False
 		self.end = False
 
-		self.current_player = tk.Label(self, text='Current player: White', padx=5, pady=5)
+		self.current_player = tk.Label(self, text='Joueur en cours: Blanc', padx=5, pady=5)
 		self.current_player.grid(row=0,column=2, columnspan=len(self.board) )
 
-		tk.Label(self, text='White Capture:').grid(row =1, column = 0, padx=len(self.board), pady=5)
+		tk.Label(self, text='Captures blanches:').grid(row =1, column = 0, padx=len(self.board), pady=5)
 		self.white_capture_label = tk.Label(self, text = 0)
 		self.white_capture_label.grid(row =2, column = 0, padx=len(self.board), pady=5)
-		tk.Label(self, text='Black Capture: ').grid(row =1, column = len(self.board)+4, padx=len(self.board), pady=5)
+		tk.Label(self, text='Captures noires: ').grid(row =1, column = len(self.board)+4, padx=len(self.board), pady=5)
 		self.black_capture_label = tk.Label(self, text = 0)
 		self.black_capture_label.grid(row =2, column = len(self.board)+4, padx=len(self.board), pady=5)
 		self.white_capture = 0
@@ -51,31 +51,35 @@ class Interface(tk.Tk):
 
 		self.frame_button = tk.Frame(self)
 		self.frame_button.grid(row=len(self.board)+4, column=0, columnspan=len(self.board)+6, pady=5)
-		tk.Button(self.frame_button, text='New Game', command=self.new_game).grid(row = 0, column=0, padx = 2)
-		tk.Button(self.frame_button, text='Save Game', command=self.save_game).grid(row = 0, column=1, padx = 2)
-		tk.Button(self.frame_button, text='Load Game', command=self.load_game).grid(row = 0, column=2, padx = 2)
-		tk.Button(self.frame_button, text='Help', command=self.help).grid(row = 0, column=3, padx = 2)
+		tk.Button(self.frame_button, text='Nouveau jeu', command=self.new_game).grid(row = 0, column=0, padx = 2)
+		tk.Button(self.frame_button, text='Sauvegarder', command=self.save_game).grid(row = 0, column=1, padx = 2)
+		tk.Button(self.frame_button, text='Charger', command=self.load_game).grid(row = 0, column=2, padx = 2)
+		tk.Button(self.frame_button, text='Aide', command=self.help).grid(row = 0, column=3, padx = 2)
 
 		self.bind("<F1>", self.help)
+		self.bind("<Control-n>",self.new_game)
+		self.bind("<Control-s>",self.save_game)
+		self.bind("<Control-o>",self.load_game)
 
 
 
-	def new_game(self):
-		self.board = initBoard(DIMENSION)
-		if self.player == BLACK_PLAYER:
-			self.inverse()
-		self.player = WHITE_PLAYER
-		self.hasPlayed = False
-		self.hasCaptured = False
-		self.end = False
-		self.white_capture = 0
-		self.black_capture = 0
-		self.white_capture_label.configure(text = self.white_capture)
-		self.black_capture_label.configure(text = self.black_capture)
-		self.canv = Board(self, 'white', self.board_length, self.board)
-		self.canv.grid(row=2, column=2, rowspan=len(self.board), columnspan = len(self.board))
+	def new_game(self, event = None):
+		if messagebox.askyesno("Nouveau jeu", "Etes vous sur de vouloir recommencer le jeux?"):
+			self.board = initBoard(DIMENSION)
+			if self.player == BLACK_PLAYER:
+				self.inverse()
+			self.player = WHITE_PLAYER
+			self.hasPlayed = False
+			self.hasCaptured = False
+			self.end = False
+			self.white_capture = 0
+			self.black_capture = 0
+			self.white_capture_label.configure(text = self.white_capture)
+			self.black_capture_label.configure(text = self.black_capture)
+			self.canv = Board(self, 'white', self.board_length, self.board)
+			self.canv.grid(row=2, column=2, rowspan=len(self.board), columnspan = len(self.board))
 
-	def save_game(self):
+	def save_game(self, event = None):
 		file_name = filedialog.asksaveasfilename(filetypes=[("Data Save", "*.dat"),("Tous","*")])
 		if len(file_name) > 0:
 			if save(file_name, self.board, self.player):
@@ -83,7 +87,7 @@ class Interface(tk.Tk):
 			else:
 				messagebox.showwarning("Sauvegarde", "Problème pendant la sauvegarde.")
 
-	def load_game(self):
+	def load_game(self, event=None):
 		file_name = filedialog.askopenfilename(filetypes=(("Data Save", ".dat"),("All files", "*.*")))
 		if len(file_name) > 0:
 			new_board, new_player = load(file_name)
@@ -123,9 +127,9 @@ class Interface(tk.Tk):
 	def inverse(self):
 		self.player *= BLACK_PLAYER
 		if self.player == WHITE_PLAYER:
-			self.current_player.configure(text = "Current Player: White")
+			self.current_player.configure(text = "Joueur en cours: Blanc")
 		elif self.player == BLACK_PLAYER:
-			self.current_player.configure(text = "Current Player: Black")
+			self.current_player.configure(text = "Joueur en cours: Noir")
 
 		for i in range(len(self.board)):
 			self.label_left[i].configure(text = len(self.board) + 1 - int(self.label_left[i].cget("text")))
@@ -180,17 +184,17 @@ class Interface(tk.Tk):
 
 				if self.end is not False:
 					if self.player == WHITE_PLAYER:
-						messagebox.showinfo("Win", "White player win.")
+						messagebox.showinfo("Fin", "Les blans gagnent.")
 					elif self.player == BLACK_PLAYER:
-						messagebox.showinfo("Win", "Black player win.")
+						messagebox.showinfo("Fin", "Les noirs gagnent.")
 					else:
-						messagebox.showinfo("Null", "Nobody win.")
+						messagebox.showinfo("Fin", "Pat, aucun gagnant.")
 
 			else:
 				self.show_error(errorMessge)
 
 	def show_error(self, err_code):
-		messagebox.showerror("Error", strerr(err_code))
+		messagebox.showerror("Erreur", strerr(err_code))
 
 
 
@@ -213,7 +217,7 @@ class Interface(tk.Tk):
 
 
 
-class Board(tk.Canvas):  # réécrir les for comm avec draw piece
+class Board(tk.Canvas):
 	def __init__(self,parent, bg, length, board, inversed = 1):
 		tk.Canvas.__init__(self,parent, bg=bg, height=length, width=length)
 		self.length = length
@@ -285,7 +289,7 @@ class Board(tk.Canvas):  # réécrir les for comm avec draw piece
 					nex_j = self.len_board - 1- nex_j
 				self.parent.move(i, j, nex_i, nex_j, self.player)
 		else:
-			messagebox.showinfo("Win", "La partie est déja finie.")
+			messagebox.showinfo("Fin", "La partie est déja finie.")
 
 	def deslecet_pawn(self):
 		if self.selected_object:
@@ -336,7 +340,7 @@ class Board(tk.Canvas):  # réécrir les for comm avec draw piece
 class help_window(tk.Tk):
 	def __init__(self):
 		tk.Tk.__init__(self)
-		self.title('Help')
+		self.title('Aide')
 
 
 
