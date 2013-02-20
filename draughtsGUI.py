@@ -342,6 +342,24 @@ class help_window(tk.Tk):
 		tk.Tk.__init__(self)
 		self.title('Aide')
 
+		tk.Label(self, text="Les différents pions:").grid(row=0,columnspan=4,pady=5)
+		self.white_pawn = tk.Canvas(self, width = 50, height = 50, bg = "black")
+		self.black_pawn = tk.Canvas(self, width = 50, height = 50, bg = "black")
+		self.white_king = tk.Canvas(self, width = 50, height = 50, bg = "black")
+		self.black_king = tk.Canvas(self, width = 50, height = 50, bg = "black")
+		self.white_pawn.grid(row = 1, column = 0, padx=5, pady =2)
+		self.white_king.grid(row = 2, column = 0, padx=5, pady =2)
+		self.black_pawn.grid(row =1, column = 3, padx=5, pady =2)
+		self.black_king.grid(row =2, column = 3, padx=5, pady =2)
+		self.white_pawn.create_oval(5,5,45,45, fill = "white", outline = "white", width=2)
+		self.black_pawn.create_oval(5,5,45,45, fill = "black", outline = "white", width=2)
+		self.white_king.create_oval(5,5,45,45, fill = "white", outline = "red", width=5)
+		self.black_king.create_oval(5,5,45,45, fill = "black", outline = "red", width=5)
+		tk.Label(self, text="Pions blancs").grid(row=1, column=1, sticky=tk.W, padx=5, pady =2)
+		tk.Label(self, text="Dammes blanches").grid(row=2, column=1, sticky=tk.W, padx=5, pady =2)
+		tk.Label(self, text="Pions noirs").grid(row=1, column=2, sticky=tk.E, padx=5, pady =2)
+		tk.Label(self, text="Dammes noires").grid(row=2, column=2, sticky=tk.E, padx=5, pady =2)
+
 
 
 fenetre = Interface()
