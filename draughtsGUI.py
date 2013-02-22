@@ -241,18 +241,24 @@ class Board(tk.Canvas):
 		self.pawn = {}
 		for k in range(len(board)):
 			for l in range(len(board)):
-
-				if board[k][l] ==WHITE_PLAYER:
-					self.pawn[self.create_oval(self.rapport*i+5,self.rapport*j+5,self.rapport*i+self.rapport-5,self.rapport*j+self.rapport-5, outline = "white", fill = "white", width=2)] = [WHITE_PLAYER, k, l]
-				elif board[k][l]==BLACK_PLAYER:
-					self.pawn[self.create_oval(self.rapport*i+5,self.rapport*j+5,self.rapport*i+self.rapport-5,self.rapport*j+self.rapport-5, outline = "white", fill = "Black", width=2)] = [BLACK_PLAYER, k, l]
-				elif board[k][l]>0:
-					self.pawn[self.create_oval(self.rapport*i+5,self.rapport*j+5,self.rapport*i+self.rapport-5,self.rapport*j+self.rapport-5, outline = "red", fill = "white", width=5)] = [WHITE_PLAYER, k, l]
-				elif board[k][l]<0:
-					self.pawn[self.create_oval(self.rapport*i+5,self.rapport*j+5,self.rapport*i+self.rapport-5,self.rapport*j+self.rapport-5, outline = "red", fill = "black", width=5)] = [BLACK_PLAYER, k, l]
+				player = board[k][l]
+				if player !=0 and abs(player) < 2:
+					self.pawn[self.create_pawn(self.rapport,i,j,player)] = [player, k, l]
+				elif player !=0:
+					self.pawn[self.create_pawn(self.rapport,i,j,player,True)] = [player, k, l]
 				i+=1
 			i=0
 			j+=1
+			
+	def create_pawn(self, rapport, i, j, player, king = False):
+		line = "white"
+		width = 2
+		if king:
+			line = "red"
+			width = 5
+		color = "white" if player > 0 else "black"
+
+		return self.create_oval(rapport*i+5,rapport*j+5,rapport*i+rapport-5,rapport*j+rapport-5, outline = line, fill = color, width=width)
 
 	def select_piece(self, event):
 		if self.parent.get_end is not False:
