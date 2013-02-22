@@ -143,19 +143,8 @@ class Interface(tk.Tk):
 
 	def move(self, i, j, nex_i, nex_j, player):
 		if i-nex_i !=0 and j - nex_j !=0:
-			if nex_j - j >0 and player == WHITE_PLAYER:
-				direction = "R"
-			elif player == WHITE_PLAYER:
-				direction = 'L'
-			elif nex_j - j > 0:
-				direction = 'L'
-			else:
-				direction = 'R'
-			if nex_i - i > 0 and player == WHITE_PLAYER:
-				direction += 'B'
-			elif nex_i-i<0 and player == BLACK_PLAYER:
-				direction +='B'
-			length = abs(nex_i - i)
+			direction, length = self.direction_length(i,j,nex_i,nex_j,player)
+			
 			errorMessge = checkMove(self.board, i, j, direction, player, length, self.hasPlayed, self.hasCaptured)
 
 			if errorMessge == PAWN_ONLY_ONE_MOVE or errorMessge == NO_FREE_WAY:
@@ -171,27 +160,52 @@ class Interface(tk.Tk):
 				self.hasPlayed = True
 
 				if captured[1]:
-					if self.player == WHITE_PLAYER:
-						self.white_capture+=1
-						self.white_capture_label.configure(text = self.white_capture)
-					else:
-						self.black_capture+=1
-						self.black_capture_label.configure(text = self.black_capture)
-					capture(self.board, captured[1][0], captured[1][1])
-					self.canv.delete_pawn(captured[1][0], captured[1][1])
-					self.hasCaptured = True
+					self.capture(captured)
+					
 				self.end = checkEndOfGame(self.board, player)
 
 				if self.end is not False:
-					if self.player == WHITE_PLAYER:
-						messagebox.showinfo("Fin", "Les blans gagnent.")
-					elif self.player == BLACK_PLAYER:
-						messagebox.showinfo("Fin", "Les noirs gagnent.")
-					else:
-						messagebox.showinfo("Fin", "Pat, aucun gagnant.")
+					self.show_end()
 
 			else:
 				self.show_error(errorMessge)
+
+	def direction_length(self, i, j, nex_i, nex_j, player):
+		if nex_j - j >0 and player == WHITE_PLAYER:
+			direction = "R"
+		elif player == WHITE_PLAYER:
+			direction = 'L'
+		elif nex_j - j > 0:
+			direction = 'L'
+		else:
+			direction = 'R'
+		if nex_i - i > 0 and player == WHITE_PLAYER:
+			direction += 'B'
+		elif nex_i-i<0 and player == BLACK_PLAYER:
+			direction +='B'
+		length = abs(nex_i - i)
+		return direction, length
+
+
+	def capture(self, captured):
+		if self.player == WHITE_PLAYER:
+			self.white_capture+=1
+			self.white_capture_label.configure(text = self.white_capture)
+		else:
+			self.black_capture+=1
+			self.black_capture_label.configure(text = self.black_capture)
+		capture(self.board, captured[1][0], captured[1][1])
+		self.canv.delete_pawn(captured[1][0], captured[1][1])
+		self.hasCaptured = True
+
+	def show_end(self):
+		if self.player == WHITE_PLAYER:
+			messagebox.showinfo("Fin", "Les blans gagnent.")
+		elif self.player == BLACK_PLAYER:
+			messagebox.showinfo("Fin", "Les noirs gagnent.")
+		else:
+			messagebox.showinfo("Fin", "Pat, aucun gagnant.")
+
 
 	def show_error(self, err_code):
 		messagebox.showerror("Erreur", strerr(err_code))
@@ -210,10 +224,6 @@ class Interface(tk.Tk):
 		king = becomeKing(self.board, i,j)
 		if king:
 			self.canv.king(i,j)
-
-
-
-
 
 
 
@@ -346,6 +356,8 @@ class Board(tk.Canvas):
 	def king(self, i, j):
 		pawn = self.find_closest(self.ratio*j+self.ratio//2,self.ratio*i+self.ratio//2)
 		self.itemconfig(pawn, width=5, outline="red")
+
+
 
 class help_window(tk.Tk):
 	def __init__(self):

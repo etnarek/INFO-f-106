@@ -284,18 +284,22 @@ def checkMove(board, i, j, direction, player, length=1, hasPlayed=False, hasCapt
 			elif board[new_i][new_j] != 0 and board[new_i][new_j] * player < 0:
 				errCode = TOO_LONG_JUMP
 			else:
+				print(1)
 				errCode = NO_ERROR
 
 		else:
-			if hasPlayed and hasCaptured:
+			if hasPlayed :
 				errCode = MUST_CAPTURE
+
 			elif -2 < board[i][j] < 2:
 				try:
 					direction[1] == 'B'
 					errCode = ONLY_KING_GO_BACK
 				except:
+					print(2)
 					errCode = NO_ERROR
 			else:
+				print(3)
 				errCode = NO_ERROR
 	if capture_info:
 		errCode = (errCode, capture)
@@ -348,11 +352,12 @@ def strerr(errCode):
 			   NO_FREE_WAY: "La dame doit s'arrêter sur la case se trouvant juste après celle de capture.",
 			   NO_PIECE: "Il n'y a pas de pièce à cette position.",
 			   OPPONENT_PIECE: "Cette pièce ne vous appartient pas.",
-			   MUST_CAPTURE: "Pour continuer une rafle, il faut continuer de capturer."}
+			   MUST_CAPTURE: "Il faut capturer pour continuer de jouer."}
 	return erreurs[errCode]
 
 
 def checkEndOfGame(board, player):
+	print("test fin")
 	"""
 	Vérifie si la partie est finie.
 	Si oui, regarde en fonction du joueur à jouer s'il a gagné, perdu ou si c'est un matche nul.
@@ -398,5 +403,5 @@ def checkEndOfGame(board, player):
 			res = BLACK_PLAYER
 		elif BLACK_PLAYER_PAWN == 0:
 			res = WHITE_PLAYER
-
+	print("fin test")
 	return res
