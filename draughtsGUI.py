@@ -265,24 +265,11 @@ class Board(tk.Canvas):
 			select_object=self.find_closest(event.x, event.y)
 			if not self.selected_object:
 				if select_object[0] in self.pawn:
-					i = self.pawn[select_object[0]][1]
-					j = self.pawn[select_object[0]][2]
-					player = int(self.pawn[select_object[0]][0])
-					if (player==self.parent.get_player()*abs(player)):
-						self.itemconfig(select_object, fill="green")
-						self.selected_object = select_object
-						self.i = i
-						self.j = j
-						self.player = player
-					else:
-						self.parent.show_error(OPPONENT_PIECE)
+					self.select_new_pawn(select_object)
 
 			elif select_object == self.selected_object:
 				self.deslecet_pawn()
-				if self.parent.get_hasPlayed():
-					self.parent.set_hasCaptured(False)
-					self.parent.set_hasPlayed(False)
-					self.parent.inverse()
+					
 			else:
 				nex_i = event.y
 				nex_j = event.x
@@ -297,6 +284,20 @@ class Board(tk.Canvas):
 		else:
 			messagebox.showinfo("Fin", "La partie est déja finie.")
 
+	def select_new_pawn(self, select_object):
+		i = self.pawn[select_object[0]][1]
+		j = self.pawn[select_object[0]][2]
+		player = int(self.pawn[select_object[0]][0])
+		if (player==self.parent.get_player()*abs(player)):
+			self.itemconfig(select_object, fill="green")
+			self.selected_object = select_object
+			self.i = i
+			self.j = j
+			self.player = player
+		else:
+			self.parent.show_error(OPPONENT_PIECE)
+
+
 	def deslecet_pawn(self):
 		if self.selected_object:
 			if self.pawn[self.selected_object[0]][0] == WHITE_PLAYER:
@@ -305,6 +306,9 @@ class Board(tk.Canvas):
 				self.itemconfig(self.selected_object, fill="black")
 			if self.parent.get_hasPlayed():
 				self.parent.king(self.pawn[self.selected_object[0]][1],self.pawn[self.selected_object[0]][2])
+				self.parent.set_hasCaptured(False)
+				self.parent.set_hasPlayed(False)
+				self.parent.inverse()
 
 			self.selected_object = False
 
