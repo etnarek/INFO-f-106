@@ -222,12 +222,12 @@ class Board(tk.Canvas):
 		tk.Canvas.__init__(self,parent, bg=bg, height=length, width=length)
 		self.length = length
 		self.len_board = len(board)
-		self.rapport = (length/len(board))
+		self.ratio = (length/len(board))
 		self.parent = parent
 		for k in range(len(board)):
 			for l in range(len(board)):
 				if (k-l)%2 == 1 :
-					self.create_rectangle(self.rapport*l,self.rapport*k, self.rapport*l+self.rapport, self.rapport*k+self.rapport, fill = "black")
+					self.create_rectangle(self.ratio*l,self.ratio*k, self.ratio*l+self.ratio, self.ratio*k+self.ratio, fill = "black")
 		self.draw_Piece(board)
 		self.inversed = inversed
 
@@ -243,14 +243,14 @@ class Board(tk.Canvas):
 			for l in range(len(board)):
 				player = board[k][l]
 				if player !=0 and abs(player) < 2:
-					self.pawn[self.create_pawn(self.rapport,i,j,player)] = [player, k, l]
+					self.pawn[self.create_pawn(self.ratio,i,j,player)] = [player, k, l]
 				elif player !=0:
-					self.pawn[self.create_pawn(self.rapport,i,j,player,True)] = [player, k, l]
+					self.pawn[self.create_pawn(self.ratio,i,j,player,True)] = [player, k, l]
 				i+=1
 			i=0
 			j+=1
 			
-	def create_pawn(self, rapport, i, j, player, king = False):
+	def create_pawn(self, ratio, i, j, player, king = False):
 		line = "white"
 		width = 2
 		if king:
@@ -258,7 +258,7 @@ class Board(tk.Canvas):
 			width = 5
 		color = "white" if player > 0 else "black"
 
-		return self.create_oval(rapport*i+5,rapport*j+5,rapport*i+rapport-5,rapport*j+rapport-5, outline = line, fill = color, width=width)
+		return self.create_oval(ratio*i+5,ratio*j+5,ratio*i+ratio-5,ratio*j+ratio-5, outline = line, fill = color, width=width)
 
 	def select_piece(self, event):
 		if self.parent.get_end is not False:
@@ -286,8 +286,8 @@ class Board(tk.Canvas):
 			else:
 				nex_i = event.y
 				nex_j = event.x
-				nex_i = int(nex_i//self.rapport)
-				nex_j = int(nex_j//self.rapport)
+				nex_i = int(nex_i//self.ratio)
+				nex_j = int(nex_j//self.ratio)
 				i = self.i
 				j = self.j
 				if self.inversed == -1:
@@ -317,7 +317,7 @@ class Board(tk.Canvas):
 			else:
 				y= self.pawn[i][1]
 				x= self.pawn[i][2]
-			self.coords(i, self.rapport*x+5, self.rapport*y+5, self.rapport*x+self.rapport-5, self.rapport*y+self.rapport-5)
+			self.coords(i, self.ratio*x+5, self.ratio*y+5, self.ratio*x+self.ratio-5, self.ratio*y+self.ratio-5)
 		self.inversed *=-1
 
 	def move(self, next):
@@ -326,7 +326,7 @@ class Board(tk.Canvas):
 		if self.inversed == -1:
 			k = self.len_board -1 -k
 			l = self.len_board -1 -l
-		self.coords(self.selected_object, self.rapport*k+5, self.rapport*l+5, self.rapport*k+self.rapport-5, self.rapport*l+self.rapport-5)
+		self.coords(self.selected_object, self.ratio*k+5, self.ratio*l+5, self.ratio*k+self.ratio-5, self.ratio*l+self.ratio-5)
 		self.pawn[self.selected_object[0]][1] = i
 		self.pawn[self.selected_object[0]][2] = j
 		self.i, self.j = i, j
@@ -335,12 +335,12 @@ class Board(tk.Canvas):
 		if self.inversed == -1:
 			i = self.len_board -1 -i
 			j = self.len_board -1 -j
-		pawn = self.find_closest(self.rapport*j+self.rapport//2,self.rapport*i+self.rapport//2)
+		pawn = self.find_closest(self.ratio*j+self.ratio//2,self.ratio*i+self.ratio//2)
 		del self.pawn[pawn[0]]
 		self.delete(pawn)
 
 	def king(self, i, j):
-		pawn = self.find_closest(self.rapport*j+self.rapport//2,self.rapport*i+self.rapport//2)
+		pawn = self.find_closest(self.ratio*j+self.ratio//2,self.ratio*i+self.ratio//2)
 		self.itemconfig(pawn, width=5, outline="red")
 
 class help_window(tk.Tk):
