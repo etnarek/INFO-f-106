@@ -1,13 +1,55 @@
+
+# Import de base
 import tkinter as tk
 import tkinter.filedialog as filedialog
 import tkinter.messagebox as messagebox
 from config import *
 from draughtsFunctions import *
 
-# Help Box
-# Commentaire
+# Commentaire + dock_string
 
 class Interface(tk.Tk):
+	"""
+	La classe Interface permet de creer la fenètre autour du canvas. Elle fait appel à la classe Board pour dessiner le canvas.
+
+	Elle est héritée de la classe Tk du module tkinter
+
+	Cette classe comprend les fonctions suivantes:
+		__init__() 			initialise la classe
+		new_game() 			crée un nouveau jeu
+		save_game() 		sauvegarde le jeu
+		load_game() 		charge un jeu sauvegardé
+		help() 				appel la classe help_window
+		inverse() 			permet un changement de joueur en inversant l'interface
+		move() 				bouge une piece
+		direction_length() 	retourne la longueur et direction à partir des coordonées.
+		capture() 			s'occupe des captures
+		king() 				transforme un pion en damme si besoin
+		show_end() 			affiche un message de fin
+		showerror() 		affiche les messages d'erreurs
+		get_player() 		retourne le joueur en cour
+		set_hasPlayed() 	permet de changer la valeur hasPlayed
+		set_hasCaptured() 	permet de changer la valeur de hasCaptured
+		get_hasPlayed() 	permet de savoir ce que vaut hasPlayed
+		get_end() 			permet de savoir si le jeu est fini.
+
+	et a les attributs suivants:
+		board 				contien la matrice du damier
+		player 				conteint le joueur en cour
+		hasPlayed 			vrais si le joueur à bougé une pièce
+		hasCaptured 		vrai si le joueur a capturé une piece
+		end 				vrais si la partie est finie
+		current_player 		reférnece vers le Label contenant le joueur
+		white_capture_label	reférence vers le Label pour les captures blanches
+		black_capture_label	reférence vers le Label pour les captures noires
+		white_capture 		contien le nombre de captures blanches
+		black_capture 		contien le nombre de captures noires
+		label_left			liste de reférence vers les Label à gauche du canvas
+		label_right 		liste de reférence vers les Label à droite du canvas
+		label_up 			liste de reférence vers les Label en haut du canvas
+		label_down 			liste de reférence vers les Label en basd du canvas
+		canv 				reférence vers le damier 			
+	"""
 	def __init__(self):
 		tk.Tk.__init__(self)
 		self.title('Draughts')
@@ -140,9 +182,6 @@ class Interface(tk.Tk):
 			self.label_down[i].configure(text = chr(2*ord('a') + len(self.board) - 1 - ord(self.label_down[i].cget("text"))))
 		self.canv.inverse()
 
-	def get_player(self):
-		return self.player
-
 	def move(self, i, j, nex_i, nex_j, player):
 		if i-nex_i !=0 and j - nex_j !=0:
 			direction, length = self.direction_length(i,j,nex_i,nex_j,player)
@@ -200,6 +239,11 @@ class Interface(tk.Tk):
 		self.canv.delete_pawn(captured[1][0], captured[1][1])
 		self.hasCaptured = True
 
+	def king(self, i, j):
+		king = becomeKing(self.board, i,j)
+		if king:
+			self.canv.king(i,j)
+
 	def show_end(self):
 		if self.player == WHITE_PLAYER:
 			messagebox.showinfo("Fin", "Les blans gagnent.")
@@ -213,7 +257,8 @@ class Interface(tk.Tk):
 		messagebox.showerror("Erreur", strerr(err_code))
 
 
-
+	def get_player(self):
+		return self.player
 	def set_hasPlayed(self, bool):
 		self.hasPlayed = bool
 	def set_hasCaptured(self, bool):
@@ -222,14 +267,40 @@ class Interface(tk.Tk):
 		return self.hasPlayed
 	def get_end(self):
 		return self.end
-	def king(self, i, j):
-		king = becomeKing(self.board, i,j)
-		if king:
-			self.canv.king(i,j)
+	
 
 
 
 class Board(tk.Canvas):
+	"""
+	cette classe s'occupe de dessiner le damier et de bouger les pions.
+
+	Elle est héritée de la classe Canvas du module tkinter
+
+	Elle contien les fonctions suivantes:
+		__init__() 			charge les différents eléments du canvas
+		draw_Piece() 		s'occupe de dire quand on doit dessiner une piece avec create_pawn()
+		create_pawn()		dessine les pièces demandées sur le canvas
+		select_piece() 		s'occupe de l'évenement généré l'orsqu'on clique sur un pièce.
+		select_new_pawn() 	fonction appelée si on selectionne un pion sans avoir séléctionné avant.
+		deslecet_pawn() 	fonction utilisée lors de la désélection d'un pion
+		inverse() 			inverse les pions du canvas
+		move() 				bouge les pièces sur le canvas
+		delete_pawn() 		supprime un pion du canvas
+		king() 				transforme un pion en damme
+
+	et a comme attributs:
+		length       		largeur du canvas
+		len_board    		nombre de cases de largeur du damier
+		ratio  				rapport entre length et len_board 
+		parent  			lien vers la fenètre parente
+		inversed  			est à -1 si le damier est inversé
+		selected_object  	contient l'objet qui est séléctionné est à false par défault
+		pawn  				dictionnaire contanant toute les pièces dessinées sur le canvas pour les bougers plus facilement.
+		i  					ligne de la dernière pièce selectionnée
+		j  					collne de la dernière pièce selectionnée
+		player  			joueur de la dernière pièce selectionnée
+	"""
 	def __init__(self,parent, bg, length, board, inversed = 1):
 		tk.Canvas.__init__(self,parent, bg=bg, height=length, width=length)
 		self.length = length
@@ -365,23 +436,31 @@ class Board(tk.Canvas):
 
 
 class help_window(tk.Tk):
+	"""
+	Cette classe permet d'afficher la fenètre d'aide.
+
+	Elle est héritée de la classe Tk du module tkinter
+
+	Elle n'a comme fonction que:
+		__init__() 		charge les différents éléments de la fenètre d'aide.
+	"""
 	def __init__(self):
 		tk.Tk.__init__(self)
 		self.title('Aide')
 
 		tk.Label(self, text="Les différents pions:").grid(row=0,columnspan=4,pady=5)
-		self.white_pawn = tk.Canvas(self, width = 50, height = 50, bg = "black")
-		self.black_pawn = tk.Canvas(self, width = 50, height = 50, bg = "black")
-		self.white_king = tk.Canvas(self, width = 50, height = 50, bg = "black")
-		self.black_king = tk.Canvas(self, width = 50, height = 50, bg = "black")
-		self.white_pawn.grid(row = 1, column = 0, padx=5, pady =2)
-		self.white_king.grid(row = 2, column = 0, padx=5, pady =2)
-		self.black_pawn.grid(row =1, column = 3, padx=5, pady =2)
-		self.black_king.grid(row =2, column = 3, padx=5, pady =2)
-		self.white_pawn.create_oval(5,5,45,45, fill = "white", outline = "white", width=2)
-		self.black_pawn.create_oval(5,5,45,45, fill = "black", outline = "white", width=2)
-		self.white_king.create_oval(5,5,45,45, fill = "white", outline = "red", width=5)
-		self.black_king.create_oval(5,5,45,45, fill = "black", outline = "red", width=5)
+		white_pawn = tk.Canvas(self, width = 50, height = 50, bg = "black")
+		black_pawn = tk.Canvas(self, width = 50, height = 50, bg = "black")
+		white_king = tk.Canvas(self, width = 50, height = 50, bg = "black")
+		black_king = tk.Canvas(self, width = 50, height = 50, bg = "black")
+		white_pawn.grid(row = 1, column = 0, padx=5, pady =2)
+		white_king.grid(row = 2, column = 0, padx=5, pady =2)
+		black_pawn.grid(row =1, column = 3, padx=5, pady =2)
+		black_king.grid(row =2, column = 3, padx=5, pady =2)
+		white_pawn.create_oval(5,5,45,45, fill = "white", outline = "white", width=2)
+		black_pawn.create_oval(5,5,45,45, fill = "black", outline = "white", width=2)
+		white_king.create_oval(5,5,45,45, fill = "white", outline = "red", width=5)
+		black_king.create_oval(5,5,45,45, fill = "black", outline = "red", width=5)
 		tk.Label(self, text="Pions blancs").grid(row=1, column=1, sticky=tk.W, padx=5, pady =2)
 		tk.Label(self, text="Dammes blanches").grid(row=2, column=1, sticky=tk.W, padx=5, pady =2)
 		tk.Label(self, text="Pions noirs").grid(row=1, column=2, sticky=tk.E, padx=5, pady =2)
