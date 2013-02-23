@@ -537,12 +537,16 @@ class help_window(tk.Tk):
 	"""
 
 	def __init__(self):
+		"""
+		Initialise la fenètre d'aide.
+		"""
 		tk.Tk.__init__(self)
 		self.title('Aide')
 		self.resizable(width=False, height=False)
 		underline = font.Font(self, underline = True)
 		underline_petit = font.Font(self, underline = True, size = 10)
 
+		# Aide sur les différents types de pions
 		tk.Label(self, text="Les différents pions:", font = underline).grid(row=0,columnspan=4,pady=5)
 		white_pawn = tk.Canvas(self, width = 50, height = 50, bg = "black")
 		black_pawn = tk.Canvas(self, width = 50, height = 50, bg = "black")
@@ -552,7 +556,7 @@ class help_window(tk.Tk):
 		white_king.grid(row = 2, column = 0, padx=5, pady =2)
 		black_pawn.grid(row =1, column = 3, padx=5, pady =2)
 		black_king.grid(row =2, column = 3, padx=5, pady =2)
-		white_pawn.create_oval(5,5,45,45, fill = "white", outline = "white", width=2)
+		white_pawn.create_oval(5,5,45,45, fill = "white", outline = "white", width=2) # Dessins de pions
 		black_pawn.create_oval(5,5,45,45, fill = "black", outline = "white", width=2)
 		white_king.create_oval(5,5,45,45, fill = "white", outline = "red", width=5)
 		black_king.create_oval(5,5,45,45, fill = "black", outline = "red", width=5)
@@ -561,6 +565,7 @@ class help_window(tk.Tk):
 		tk.Label(self, text="Pions noirs").grid(row=1, column=2, sticky=tk.E, padx=5, pady =2)
 		tk.Label(self, text="Dammes noires").grid(row=2, column=2, sticky=tk.E, padx=5, pady =2)
 
+		# Expications des rêgles de base
 		tk.Label(self, text="Règles:", font = underline).grid(row = 3, columnspan=4, pady=5)
 		tk.Label(self, text="Déplacements:", font = underline_petit).grid(row = 4, column = 0, sticky = tk.N + tk.E, pady = 3, padx = 5)
 		deplacement = "Les pions ne peuvent se déplacer que d'une seule case en diagonale\n"
@@ -569,6 +574,7 @@ class help_window(tk.Tk):
 		deplacement+= "et du nombre de autant de case possible tant que le chemain est libre."
 		tk.Label(self, text=deplacement, justify=tk.LEFT).grid(row=4, column = 1, columnspan =3, sticky = tk.W, pady = 3, padx = 5)
 
+		# Explication pour les prises
 		tk.Label(self, text="Prise:", font = underline_petit).grid(row=5, column=0, sticky=tk.N + tk.E, pady = 5, padx = 5)
 		prise = "Pour prendre un pion à l'adversaire, il faut être à une case si on a un pion\n"
 		prise += "Les dames doivent être dans la même diadonale et qu'il n'y aie aucun pion dans le chemin.\n\n"
