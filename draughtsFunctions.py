@@ -284,7 +284,6 @@ def checkMove(board, i, j, direction, player, length=1, hasPlayed=False, hasCapt
 			elif board[new_i][new_j] != 0 and board[new_i][new_j] * player < 0:
 				errCode = TOO_LONG_JUMP
 			else:
-				print(1)
 				errCode = NO_ERROR
 
 		else:
@@ -296,10 +295,8 @@ def checkMove(board, i, j, direction, player, length=1, hasPlayed=False, hasCapt
 					direction[1] == 'B'
 					errCode = ONLY_KING_GO_BACK
 				except:
-					print(2)
 					errCode = NO_ERROR
 			else:
-				print(3)
 				errCode = NO_ERROR
 	if capture_info:
 		errCode = (errCode, capture)
@@ -357,7 +354,6 @@ def strerr(errCode):
 
 
 def checkEndOfGame(board, player):
-	print("test fin")
 	"""
 	Vérifie si la partie est finie.
 	Si oui, regarde en fonction du joueur à jouer s'il a gagné, perdu ou si c'est un matche nul.
@@ -403,5 +399,4 @@ def checkEndOfGame(board, player):
 			res = BLACK_PLAYER
 		elif BLACK_PLAYER_PAWN == 0:
 			res = WHITE_PLAYER
-	print("fin test")
 	return res

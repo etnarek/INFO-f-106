@@ -92,6 +92,8 @@ class Interface(tk.Tk):
 		if len(file_name) > 0:
 			new_board, new_player = load(file_name)
 			if (new_board and new_player):
+				if self.player == BLACK_PLAYER:
+					self.inverse()
 				self.board = new_board
 				self.hasPlayed = False
 				self.hasCaptured = False
@@ -181,7 +183,7 @@ class Interface(tk.Tk):
 			direction = 'R'
 		if nex_i - i > 0 and player == WHITE_PLAYER:
 			direction += 'B'
-		elif nex_i-i<0 and player == BLACK_PLAYER:
+		elif nex_i-i < 0 and player == BLACK_PLAYER:
 			direction +='B'
 		length = abs(nex_i - i)
 		return direction, length
@@ -255,7 +257,7 @@ class Board(tk.Canvas):
 				if player !=0 and abs(player) < 2:
 					self.pawn[self.create_pawn(self.ratio,i,j,player)] = [player, k, l]
 				elif player !=0:
-					self.pawn[self.create_pawn(self.ratio,i,j,player,True)] = [player, k, l]
+					self.pawn[self.create_pawn(self.ratio,i,j,player,True)] = [player/abs(player), k, l]
 				i+=1
 			i=0
 			j+=1
@@ -303,7 +305,10 @@ class Board(tk.Canvas):
 			self.selected_object = select_object
 			self.i = i
 			self.j = j
-			self.player = player
+			if player > 0:
+				self.player = WHITE_PLAYER
+			elif player < 0:
+				self.player = BLACK_PLAYER
 		else:
 			self.parent.show_error(OPPONENT_PIECE)
 
@@ -382,7 +387,10 @@ class help_window(tk.Tk):
 		tk.Label(self, text="Pions noirs").grid(row=1, column=2, sticky=tk.E, padx=5, pady =2)
 		tk.Label(self, text="Dammes noires").grid(row=2, column=2, sticky=tk.E, padx=5, pady =2)
 
+		tk.Label(self, text="Règles:").grid(row = 3, columnspan=4, pady=5)
+		tk.Text(self, text="test").grid(row=4)
 
 
-fenetre = Interface()
-fenetre.mainloop()
+if __name__ == '__main__':
+	fenetre = Interface()
+	fenetre.mainloop()
