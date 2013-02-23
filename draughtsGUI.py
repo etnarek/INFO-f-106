@@ -388,7 +388,20 @@ class help_window(tk.Tk):
 		tk.Label(self, text="Dammes noires").grid(row=2, column=2, sticky=tk.E, padx=5, pady =2)
 
 		tk.Label(self, text="Règles:").grid(row = 3, columnspan=4, pady=5)
-		tk.Text(self, text="test").grid(row=4)
+		tk.Label(self, text="Déplacements:").grid(row = 4, column = 0, sticky = tk.N + tk.E, pady = 3, padx = 5)
+		deplacement = "Les pions ne peuvent se déplacer que d'une seule case en diagonale\n"
+		deplacement += "et ne peuvent aller en arrière sauf pour prendre.\n\n"
+		deplacement += "Les dammes peuvent se déplacer dans n'importe qu'elle diagonale\n"
+		deplacement+= "et du nombre de autant de case possible tant que le chemain est libre."
+		tk.Label(self, text=deplacement, justify=tk.LEFT).grid(row=4, column = 1, columnspan =3, sticky = tk.W, pady = 3, padx = 5)
+
+		tk.Label(self, text="Prise:").grid(row=5, column=0, sticky=tk.N + tk.E, pady = 5, padx = 5)
+		prise = "Pour prendre un pion à l'adversaire, il faut être à une case si on a un pion\n"
+		prise += "Les dames doivent être dans la même diadonale et qu'il n'y aie aucun pion dans le chemin.\n\n"
+		prise+="Il faut ensuite une place libre après le pion dans la même direction.\n"
+		prise += "La damme est obligé de s'arrèté juste après le pion.\n\n"
+		prise += "Après une prise, on peut continuer à prendre."
+		tk.Label(self, text = prise, justify=tk.LEFT).grid(row = 5, column = 1, columnspan = 3, sticky = tk.W, pady = 5, padx = 5)
 
 
 if __name__ == '__main__':
