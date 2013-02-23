@@ -3,6 +3,7 @@
 import tkinter as tk
 import tkinter.filedialog as filedialog
 import tkinter.messagebox as messagebox
+import tkinter.font as font
 from config import *
 from draughtsFunctions import *
 
@@ -53,7 +54,10 @@ class Interface(tk.Tk):
 	def __init__(self):
 		tk.Tk.__init__(self)
 		self.title('Draughts')
-		self.board_length = 500 #CONSTANTE
+		self.board_length = 500  #CONSTANTE
+		self.resizable(width=False, height=False)
+		underline = font.Font(self, underline = True)
+		underline_petit = font.Font(self, underline = True, size = 10)
 
 		self.board = initBoard(DIMENSION)
 		self.player = WHITE_PLAYER
@@ -61,13 +65,13 @@ class Interface(tk.Tk):
 		self.hasCaptured = False
 		self.end = False
 
-		self.current_player = tk.Label(self, text='Joueur en cours: Blanc', padx=5, pady=5)
+		self.current_player = tk.Label(self, text='Joueur en cours: Blanc',font = underline, padx=5, pady=5)
 		self.current_player.grid(row=0,column=2, columnspan=len(self.board) )
 
-		tk.Label(self, text='Captures blanches:').grid(row =1, column = 0, padx=len(self.board), pady=5)
+		tk.Label(self, text='Captures blanches:', font = underline_petit).grid(row =1, column = 0, padx=len(self.board), pady=5)
 		self.white_capture_label = tk.Label(self, text = 0)
 		self.white_capture_label.grid(row =2, column = 0, padx=len(self.board), pady=5)
-		tk.Label(self, text='Captures noires: ').grid(row =1, column = len(self.board)+4, padx=len(self.board), pady=5)
+		tk.Label(self, text='Captures noires: ', font = underline_petit).grid(row =1, column = len(self.board)+4, padx=len(self.board), pady=5)
 		self.black_capture_label = tk.Label(self, text = 0)
 		self.black_capture_label.grid(row =2, column = len(self.board)+4, padx=len(self.board), pady=5)
 		self.white_capture = 0
@@ -447,8 +451,11 @@ class help_window(tk.Tk):
 	def __init__(self):
 		tk.Tk.__init__(self)
 		self.title('Aide')
+		self.resizable(width=False, height=False)
+		underline = font.Font(self, underline = True)
+		underline_petit = font.Font(self, underline = True, size = 10)
 
-		tk.Label(self, text="Les différents pions:").grid(row=0,columnspan=4,pady=5)
+		tk.Label(self, text="Les différents pions:", font = underline).grid(row=0,columnspan=4,pady=5)
 		white_pawn = tk.Canvas(self, width = 50, height = 50, bg = "black")
 		black_pawn = tk.Canvas(self, width = 50, height = 50, bg = "black")
 		white_king = tk.Canvas(self, width = 50, height = 50, bg = "black")
@@ -466,15 +473,15 @@ class help_window(tk.Tk):
 		tk.Label(self, text="Pions noirs").grid(row=1, column=2, sticky=tk.E, padx=5, pady =2)
 		tk.Label(self, text="Dammes noires").grid(row=2, column=2, sticky=tk.E, padx=5, pady =2)
 
-		tk.Label(self, text="Règles:").grid(row = 3, columnspan=4, pady=5)
-		tk.Label(self, text="Déplacements:").grid(row = 4, column = 0, sticky = tk.N + tk.E, pady = 3, padx = 5)
+		tk.Label(self, text="Règles:", font = underline).grid(row = 3, columnspan=4, pady=5)
+		tk.Label(self, text="Déplacements:", font = underline_petit).grid(row = 4, column = 0, sticky = tk.N + tk.E, pady = 3, padx = 5)
 		deplacement = "Les pions ne peuvent se déplacer que d'une seule case en diagonale\n"
 		deplacement += "et ne peuvent aller en arrière sauf pour prendre.\n\n"
 		deplacement += "Les dammes peuvent se déplacer dans n'importe qu'elle diagonale\n"
 		deplacement+= "et du nombre de autant de case possible tant que le chemain est libre."
 		tk.Label(self, text=deplacement, justify=tk.LEFT).grid(row=4, column = 1, columnspan =3, sticky = tk.W, pady = 3, padx = 5)
 
-		tk.Label(self, text="Prise:").grid(row=5, column=0, sticky=tk.N + tk.E, pady = 5, padx = 5)
+		tk.Label(self, text="Prise:", font = underline_petit).grid(row=5, column=0, sticky=tk.N + tk.E, pady = 5, padx = 5)
 		prise = "Pour prendre un pion à l'adversaire, il faut être à une case si on a un pion\n"
 		prise += "Les dames doivent être dans la même diadonale et qu'il n'y aie aucun pion dans le chemin.\n\n"
 		prise+="Il faut ensuite une place libre après le pion dans la même direction.\n"
