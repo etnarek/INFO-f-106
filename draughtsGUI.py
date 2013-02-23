@@ -51,23 +51,32 @@ class Interface(tk.Tk):
 		label_down 			liste de reférence vers les Label en basd du canvas
 		canv 				reférence vers le damier 			
 	"""
+
 	def __init__(self):
+		"""
+		Crée la fenètre de base avec les différents boutons, textes et appele la classe Board pour creer le canvas.
+		"""
 		tk.Tk.__init__(self)
+
+		# Paramètres de la fenètre
 		self.title('Draughts')
 		self.board_length = 500  #CONSTANTE
 		self.resizable(width=False, height=False)
 		underline = font.Font(self, underline = True)
 		underline_petit = font.Font(self, underline = True, size = 10)
 
+		# Variables pour le travail
 		self.board = initBoard(DIMENSION)
 		self.player = WHITE_PLAYER
 		self.hasPlayed = False
 		self.hasCaptured = False
 		self.end = False
 
+		#joueur en cours
 		self.current_player = tk.Label(self, text='Joueur en cours: Blanc',font = underline, padx=5, pady=5)
 		self.current_player.grid(row=0,column=2, columnspan=len(self.board) )
 
+		# Comptage des prises
 		tk.Label(self, text='Captures blanches:', font = underline_petit).grid(row =1, column = 0, padx=len(self.board), pady=5)
 		self.white_capture_label = tk.Label(self, text = 0)
 		self.white_capture_label.grid(row =2, column = 0, padx=len(self.board), pady=5)
@@ -77,6 +86,7 @@ class Interface(tk.Tk):
 		self.white_capture = 0
 		self.black_capture = 0
 
+		# Damier avec les chiffres et lettres autour
 		j=0
 		self.label_left = []
 		self.label_right = []
@@ -95,6 +105,7 @@ class Interface(tk.Tk):
 		self.canv = Board(self, 'white', self.board_length, self.board)
 		self.canv.grid(row=2, column=2, rowspan=len(self.board), columnspan = len(self.board))
 
+		# Boutons
 		self.frame_button = tk.Frame(self)
 		self.frame_button.grid(row=len(self.board)+4, column=0, columnspan=len(self.board)+6, pady=5)
 		tk.Button(self.frame_button, text='Nouveau jeu', command=self.new_game).grid(row = 0, column=0, padx = 2)
@@ -102,6 +113,7 @@ class Interface(tk.Tk):
 		tk.Button(self.frame_button, text='Charger', command=self.load_game).grid(row = 0, column=2, padx = 2)
 		tk.Button(self.frame_button, text='Aide', command=self.help).grid(row = 0, column=3, padx = 2)
 
+		# Gestion d'évenement
 		self.bind("<F1>", self.help)
 		self.bind("<Control-n>",self.new_game)
 		self.bind("<Control-s>",self.save_game)
@@ -110,10 +122,17 @@ class Interface(tk.Tk):
 
 
 	def new_game(self, event = None):
+		"""
+		Permet de rénitialiser le jeux.
+		"""
 		if messagebox.askyesno("Nouveau jeu", "Etes vous sur de vouloir recommencer le jeux?"):
 			self.board = initBoard(DIMENSION)
+
+			# inversion des éléments pour revenir au cas où les blancs jouent
 			if self.player == BLACK_PLAYER:
 				self.inverse()
+
+			# Remise à zéro des variables
 			self.player = WHITE_PLAYER
 			self.hasPlayed = False
 			self.hasCaptured = False
@@ -122,10 +141,15 @@ class Interface(tk.Tk):
 			self.black_capture = 0
 			self.white_capture_label.configure(text = self.white_capture)
 			self.black_capture_label.configure(text = self.black_capture)
+
+			# Recréation du canvas
 			self.canv = Board(self, 'white', self.board_length, self.board)
 			self.canv.grid(row=2, column=2, rowspan=len(self.board), columnspan = len(self.board))
 
 	def save_game(self, event = None):
+		"""
+		Permet de sauvegarder le jeux (au format *.dat de préférence.)
+		"""
 		file_name = filedialog.asksaveasfilename(filetypes=[("Data Save", "*.dat"),("Tous","*")])
 		if len(file_name) > 0:
 			if save(file_name, self.board, self.player):
@@ -134,15 +158,23 @@ class Interface(tk.Tk):
 				messagebox.showwarning("Sauvegarde", "Problème pendant la sauvegarde.")
 
 	def load_game(self, event=None):
+		"""
+		Charge une partie de préférence au format *.dat.
+		Vérifie que le fichier n'est pas erroné.
+		"""
 		file_name = filedialog.askopenfilename(filetypes=(("Data Save", ".dat"),("All files", "*.*")))
 		if len(file_name) > 0:
 			new_board, new_player = load(file_name)
 			if (new_board and new_player):
 				if self.player == BLACK_PLAYER:
 					self.inverse()
+
+				# Chargement des nouveaux attributs
 				self.board = new_board
 				self.hasPlayed = False
 				self.hasCaptured = False
+
+				# Compte du nombre de pièces déjà capturées
 				white_count = 0
 				black_count = 0
 				total = (len(self.board)-2)//2
@@ -157,10 +189,16 @@ class Interface(tk.Tk):
 				self.black_capture = total - black_count
 				self.white_capture_label.configure(text = self.white_capture)
 				self.black_capture_label.configure(text = self.black_capture)
+
+				# Création du damier
 				self.canv = Board(self, 'white', self.board_length, self.board, new_player)
 				self.canv.grid(row=2, column=2, rowspan=len(self.board), columnspan = len(self.board))
+
+				# Inversion du damier si c'est aux noirs de jouer.
 				if new_player == BLACK_PLAYER:
 					self.inverse()
+
+				# Vérification que le jeux n'est pas déjà terminé.
 				self.end = checkEndOfGame(self.board, self.player)
 				messagebox.showinfo("chargement", "Chargement réussi.")
 			elif new_player:
@@ -169,29 +207,46 @@ class Interface(tk.Tk):
 				messagebox.showwarning("Chargement", "Erreur de chargement")
 
 	def help(self, evnt=None):
+		"""
+		Affiche la fenètre d'aide.
+		"""
 		self.help_win =help_window()
 		self.help_win.mainloop()
 
 	def inverse(self):
+		"""
+		Inversion de tous les éléments de l'interface graphique en rapport avec le damier.
+		"""
+		# Inversion des textes
 		self.player *= BLACK_PLAYER
 		if self.player == WHITE_PLAYER:
 			self.current_player.configure(text = "Joueur en cours: Blanc")
 		elif self.player == BLACK_PLAYER:
 			self.current_player.configure(text = "Joueur en cours: Noir")
 
+		# Inversion du conteour du damier
 		for i in range(len(self.board)):
 			self.label_left[i].configure(text = len(self.board) + 1 - int(self.label_left[i].cget("text")))
 			self.label_right[i].configure(text = len(self.board) + 1- int(self.label_right[i].cget("text")))
 			self.label_up[i].configure(text = chr(2*ord('a') + len(self.board) - 1 - ord(self.label_up[i].cget("text"))))
 			self.label_down[i].configure(text = chr(2*ord('a') + len(self.board) - 1 - ord(self.label_down[i].cget("text"))))
+
+		# Appel de fonction pour l'inversion du canvas
 		self.canv.inverse()
 
 	def move(self, i, j, nex_i, nex_j, player):
+		"""
+		Deplacement d'un pion d'abord dans la matrice puis sur le canvas avec gestion des erreurs.
+		prend aussi en compte les captures.
+		"""
 		if i-nex_i !=0 and j - nex_j !=0:
+
+			# Tranformation des coordonées en direction
 			direction, length = self.direction_length(i,j,nex_i,nex_j,player)
 			
 			errorMessge = checkMove(self.board, i, j, direction, player, length, self.hasPlayed, self.hasCaptured)
 
+			# Vérifier que le message d'erreur n'est pas à cause de l'envie de manger un pièce.
 			if errorMessge == PAWN_ONLY_ONE_MOVE or errorMessge == NO_FREE_WAY:
 				errorMessge, captured = checkMove(self.board, i, j, direction, player, length-1, self.hasPlayed, self.hasCaptured, True)
 				if errorMessge == NO_ERROR and captured:
@@ -200,15 +255,18 @@ class Interface(tk.Tk):
 					errorMessge = PAWN_ONLY_ONE_MOVE
 
 			if errorMessge == NO_ERROR:
+
+				#on bouge la pièce dans la matrice et le canvas
 				captured = movePiece(self.board, i, j, direction, length)
 				self.canv.move(captured[0])
 				self.hasPlayed = True
 
+				# On s'occupe de la capture s'il faut
 				if captured[1]:
 					self.capture(captured)
-					
+				
+				# On regarde si le jeux n'est pas terminé.
 				self.end = checkEndOfGame(self.board, player)
-
 				if self.end is not False:
 					self.show_end()
 
@@ -216,6 +274,11 @@ class Interface(tk.Tk):
 				self.show_error(errorMessge)
 
 	def direction_length(self, i, j, nex_i, nex_j, player):
+		"""
+		Cette fonction reçoi en paramètre deux couples de coordonées et le joueur.
+		Elle retourne la direction utilisée par les autres fonctions.
+		"""
+		# Gauche / Droite
 		if nex_j - j >0 and player == WHITE_PLAYER:
 			direction = "R"
 		elif player == WHITE_PLAYER:
@@ -224,53 +287,76 @@ class Interface(tk.Tk):
 			direction = 'L'
 		else:
 			direction = 'R'
+
+		# Retour en arrière.
 		if nex_i - i > 0 and player == WHITE_PLAYER:
 			direction += 'B'
 		elif nex_i-i < 0 and player == BLACK_PLAYER:
 			direction +='B'
+
+		# Longueur du déplacement
 		length = abs(nex_i - i)
 		return direction, length
 
 
 	def capture(self, captured):
+		"""
+		Permet la capture d'une pièce sur le damier.
+		"""
+		# Ajoute 1 à la personne qui a capturée la pièce
 		if self.player == WHITE_PLAYER:
 			self.white_capture+=1
 			self.white_capture_label.configure(text = self.white_capture)
 		else:
 			self.black_capture+=1
 			self.black_capture_label.configure(text = self.black_capture)
+
+		# Capture la pièce dans la matrice et sur le damier
 		capture(self.board, captured[1][0], captured[1][1])
 		self.canv.delete_pawn(captured[1][0], captured[1][1])
 		self.hasCaptured = True
 
 	def king(self, i, j):
+		"""
+		Transforme un pièce en damme si elle est arrivée au bout du damier.
+		"""
 		king = becomeKing(self.board, i,j)
 		if king:
 			self.canv.king(i,j)
 
 	def show_end(self):
-		if self.player == WHITE_PLAYER:
+		"""
+		Affiche un message lorsque la partie est terminée en disant qui a gagné.
+		"""
+
+		if self.end == WHITE_PLAYER:
 			messagebox.showinfo("Fin", "Les blans gagnent.")
-		elif self.player == BLACK_PLAYER:
+		elif self.end == BLACK_PLAYER:
 			messagebox.showinfo("Fin", "Les noirs gagnent.")
 		else:
 			messagebox.showinfo("Fin", "Pat, aucun gagnant.")
 
 
 	def show_error(self, err_code):
+		"""
+		Affiche les messages d'erreurs.
+		"""
 		messagebox.showerror("Erreur", strerr(err_code))
 
 
+	# getter:
 	def get_player(self):
 		return self.player
-	def set_hasPlayed(self, bool):
-		self.hasPlayed = bool
-	def set_hasCaptured(self, bool):
-		self.hasCaptured = bool
 	def get_hasPlayed(self):
 		return self.hasPlayed
 	def get_end(self):
 		return self.end
+
+	# setter
+	def set_hasPlayed(self, bool):
+		self.hasPlayed = bool
+	def set_hasCaptured(self, bool):
+		self.hasCaptured = bool
 	
 
 
@@ -305,6 +391,7 @@ class Board(tk.Canvas):
 		j  					collne de la dernière pièce selectionnée
 		player  			joueur de la dernière pièce selectionnée
 	"""
+
 	def __init__(self,parent, bg, length, board, inversed = 1):
 		tk.Canvas.__init__(self,parent, bg=bg, height=length, width=length)
 		self.length = length
@@ -448,6 +535,7 @@ class help_window(tk.Tk):
 	Elle n'a comme fonction que:
 		__init__() 		charge les différents éléments de la fenètre d'aide.
 	"""
+
 	def __init__(self):
 		tk.Tk.__init__(self)
 		self.title('Aide')
