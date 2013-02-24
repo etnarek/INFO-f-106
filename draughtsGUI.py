@@ -10,54 +10,54 @@ from draughtsFunctions import *
 
 class Interface(tk.Tk):
 	"""
-	La classe Interface permet de creer la fenètre autour du canvas. Elle fait appel à la classe Board pour dessiner le canvas.
+	La classe Interface permet de créer la fenêtre autour du canvas. Elle fait appel à la classe Board pour dessiner le canvas.
 
 	Elle est héritée de la classe Tk du module tkinter
 
 	Cette classe comprend les fonctions suivantes:
 		__init__() 			initialise la classe
 		new_game() 			crée un nouveau jeu
-		save_game() 		sauvegarde le jeu
-		load_game() 		charge un jeu sauvegardé
-		help() 				appel la classe help_window
+		save_game() 			sauvegarde le jeu
+		load_game() 			charge un jeu sauvegardé
+		help() 				appelle la classe help_window
 		inverse() 			permet un changement de joueur en inversant l'interface
-		move() 				bouge une piece
-		direction_length() 	retourne la longueur et direction à partir des coordonées.
+		move() 				bouge une pièce
+		direction_length() 		retourne la longueur et direction à partir des coordonnées.
 		capture() 			s'occupe des captures
-		king() 				transforme un pion en damme si besoin
+		king() 				transforme un pion en dame si besoin
 		show_end() 			affiche un message de fin
-		showerror() 		affiche les messages d'erreurs
-		get_player() 		retourne le joueur en cour
-		set_hasPlayed() 	permet de changer la valeur hasPlayed
-		set_hasCaptured() 	permet de changer la valeur de hasCaptured
-		get_hasPlayed() 	permet de savoir ce que vaut hasPlayed
-		get_end() 			permet de savoir si le jeu est fini.
+		showerror() 			affiche les messages d'erreurs
+		get_player() 			retourne le joueur en cours
+		set_hasPlayed() 		permet de changer la valeur hasPlayed
+		set_hasCaptured() 		permet de changer la valeur de hasCaptured
+		get_hasPlayed() 		permet de savoir ce que vaut hasPlayed
+		get_end() 			permet de savoir si le jeu est fini
 
 	et a les attributs suivants:
-		board 				contien la matrice du damier
-		player 				conteint le joueur en cour
+		board 				contient la matrice du damier
+		player 				contient le joueur en cours
 		hasPlayed 			vrais si le joueur à bougé une pièce
-		hasCaptured 		vrai si le joueur a capturé une piece
-		end 				vrais si la partie est finie
-		current_player 		reférnece vers le Label contenant le joueur
-		white_capture_label	reférence vers le Label pour les captures blanches
-		black_capture_label	reférence vers le Label pour les captures noires
-		white_capture 		contien le nombre de captures blanches
-		black_capture 		contien le nombre de captures noires
-		label_left			liste de reférence vers les Label à gauche du canvas
-		label_right 		liste de reférence vers les Label à droite du canvas
-		label_up 			liste de reférence vers les Label en haut du canvas
-		label_down 			liste de reférence vers les Label en basd du canvas
-		canv 				reférence vers le damier 			
+		hasCaptured 			vrai si le joueur a capturé une pièce
+		end 				vrai si la partie est finie
+		current_player 			référence vers le Label contenant le joueur
+		white_capture_label		référence vers le Label pour les captures blanches
+		black_capture_label		référence vers le Label pour les captures noires
+		white_capture 			contient le nombre de captures blanches
+		black_capture 			contient le nombre de captures noires
+		label_left			liste de référence vers les Label à gauche du canvas
+		label_right 			liste de référence vers les Label à droite du canvas
+		label_up 			liste de référence vers les Label en haut du canvas
+		label_down 			liste de référence vers les Label en bas du canvas
+		canv 				référence vers le damier 			
 	"""
 
 	def __init__(self):
 		"""
-		Crée la fenètre de base avec les différents boutons, textes et appele la classe Board pour creer le canvas.
+		Crée la fenêtre de base avec les différents boutons, textes et appelle la classe Board pour créer le canvas.
 		"""
 		tk.Tk.__init__(self)
 
-		# Paramètres de la fenètre
+		# Paramètres de la fenêtre
 		self.title('Draughts')
 		self.board_length = 500  #CONSTANTE
 		self.resizable(width=False, height=False)
@@ -112,7 +112,7 @@ class Interface(tk.Tk):
 		tk.Button(self.frame_button, text='Charger', command=self.load_game).grid(row = 0, column=2, padx = 2)
 		tk.Button(self.frame_button, text='Aide', command=self.help).grid(row = 0, column=3, padx = 2)
 
-		# Gestion d'évenement
+		# Gestion d'événement
 		self.bind("<F1>", self.help)
 		self.bind("<Control-n>",self.new_game)
 		self.bind("<Control-s>",self.save_game)
@@ -122,9 +122,9 @@ class Interface(tk.Tk):
 
 	def new_game(self, event = None):
 		"""
-		Permet de rénitialiser le jeux.
+		Permet de rénitialiser le jeu.
 		"""
-		if messagebox.askyesno("Nouveau jeu", "Etes vous sur de vouloir recommencer le jeux?"):
+		if messagebox.askyesno("Nouveau jeu", "Êtes-vous sûr de vouloir recommencer le jeu ?"):
 			self.board = initBoard(DIMENSION)
 
 			# inversion des éléments pour revenir au cas où les blancs jouent
@@ -147,7 +147,7 @@ class Interface(tk.Tk):
 
 	def save_game(self, event = None):
 		"""
-		Permet de sauvegarder le jeux (au format *.dat de préférence.)
+		Permet de sauvegarder le jeu (au format *.dat de préférence.)
 		"""
 		file_name = filedialog.asksaveasfilename(filetypes=[("Data Save", "*.dat"),("Tous","*")])
 		if len(file_name) > 0:
@@ -197,7 +197,7 @@ class Interface(tk.Tk):
 				if new_player == BLACK_PLAYER:
 					self.inverse()
 
-				# Vérification que le jeux n'est pas déjà terminé.
+				# Vérification que le jeu n'est pas déjà terminé.
 				self.end = checkEndOfGame(self.board, self.player)
 				messagebox.showinfo("chargement", "Chargement réussi.")
 			elif new_player:
@@ -207,7 +207,7 @@ class Interface(tk.Tk):
 
 	def help(self, evnt=None):
 		"""
-		Affiche la fenètre d'aide.
+		Affiche la fenêtre d'aide.
 		"""
 		self.help_win =help_window()
 		self.help_win.mainloop()
@@ -223,7 +223,7 @@ class Interface(tk.Tk):
 		elif self.player == BLACK_PLAYER:
 			self.current_player.configure(text = "Joueur en cours: Noir")
 
-		# Inversion du conteour du damier
+		# Inversion du contour du damier
 		for i in range(len(self.board)):
 			self.label_left[i].configure(text = len(self.board) + 1 - int(self.label_left[i].cget("text")))
 			self.label_right[i].configure(text = len(self.board) + 1- int(self.label_right[i].cget("text")))
@@ -235,17 +235,17 @@ class Interface(tk.Tk):
 
 	def move(self, i, j, nex_i, nex_j, player):
 		"""
-		Deplacement d'un pion d'abord dans la matrice puis sur le canvas avec gestion des erreurs.
+		Déplacement d'un pion d'abord dans la matrice puis sur le canvas avec gestion des erreurs.
 		prend aussi en compte les captures.
 		"""
 		if i-nex_i !=0 and j - nex_j !=0:
 
-			# Tranformation des coordonées en direction
+			# Tranformation des coordonnées en direction
 			direction, length = self.direction_length(i,j,nex_i,nex_j,player)
 			
 			errorMessge = checkMove(self.board, i, j, direction, player, length, self.hasPlayed, self.hasCaptured)
 
-			# Vérifier que le message d'erreur n'est pas à cause de l'envie de manger un pièce.
+			# Vérifier que le message d'erreur n'est pas à cause de l'envie de manger une pièce.
 			if errorMessge == PAWN_ONLY_ONE_MOVE or errorMessge == NO_FREE_WAY:
 				errorMessge, captured = checkMove(self.board, i, j, direction, player, length-1, self.hasPlayed, self.hasCaptured, True)
 				if errorMessge == NO_ERROR and captured:
@@ -264,7 +264,7 @@ class Interface(tk.Tk):
 				if captured[1]:
 					self.capture(captured)
 				
-				# On regarde si le jeux n'est pas terminé.
+				# On regarde si le jeu n'est pas terminé.
 				self.end = checkEndOfGame(self.board, player)
 				if self.end is not False:
 					self.show_end()
@@ -274,7 +274,7 @@ class Interface(tk.Tk):
 
 	def direction_length(self, i, j, nex_i, nex_j, player):
 		"""
-		Cette fonction reçoi en paramètre deux couples de coordonées et le joueur.
+		Cette fonction reçoit en paramètre deux couples de coordonnées et le joueur.
 		Elle retourne la direction utilisée par les autres fonctions.
 		"""
 		# Gauche / Droite
@@ -302,7 +302,7 @@ class Interface(tk.Tk):
 		"""
 		Permet la capture d'une pièce sur le damier.
 		"""
-		# Ajoute 1 à la personne qui a capturée la pièce
+		# Ajoute 1 à la personne qui a capturé la pièce
 		if self.player == WHITE_PLAYER:
 			self.white_capture+=1
 			self.white_capture_label.configure(text = self.white_capture)
@@ -317,7 +317,7 @@ class Interface(tk.Tk):
 
 	def king(self, i, j):
 		"""
-		Transforme un pièce en damme si elle est arrivée au bout du damier.
+		Transforme un pièce en dame si elle est arrivée au bout du damier.
 		"""
 		king = becomeKing(self.board, i,j)
 		if king:
@@ -366,28 +366,28 @@ class Board(tk.Canvas):
 
 	Elle est héritée de la classe Canvas du module tkinter
 
-	Elle contien les fonctions suivantes:
+	Elle contient les fonctions suivantes:
 		__init__() 			charge les différents eléments du canvas
-		draw_Piece() 		s'occupe de dire quand on doit dessiner une piece avec create_pawn()
-		create_pawn()		dessine les pièces demandées sur le canvas
-		select_piece() 		s'occupe de l'évenement généré l'orsqu'on clique sur un pièce.
-		select_new_pawn() 	fonction appelée si on selectionne un pion sans avoir séléctionné avant.
-		deslecet_pawn() 	fonction utilisée lors de la désélection d'un pion
+		draw_Piece() 			s'occupe de dire quand on doit dessiner une pièce avec create_pawn()
+		create_pawn()			dessine les pièces demandées sur le canvas
+		select_piece() 			s'occupe de l'événement généré lorsqu'on clique sur une pièce.
+		select_new_pawn() 		fonction appelée si on sélectionne un pion sans avoir sélectionné avant.
+		deselect_pawn() 		fonction utilisée lors de la désélection d'un pion
 		inverse() 			inverse les pions du canvas
 		move() 				bouge les pièces sur le canvas
-		delete_pawn() 		supprime un pion du canvas
-		king() 				transforme un pion en damme
+		delete_pawn() 			supprime un pion du canvas
+		king() 				transforme un pion en dame
 
 	et a comme attributs:
-		length       		largeur du canvas
-		len_board    		nombre de cases de largeur du damier
+		length       			largeur du canvas
+		len_board    			nombre de cases de largeur du damier
 		ratio  				rapport entre length et len_board 
-		parent  			lien vers la fenètre parente
+		parent  			lien vers la fenêtre parente
 		inversed  			est à -1 si le damier est inversé
-		selected_object  	contient l'objet qui est séléctionné est à false par défault
-		pawn  				dictionnaire contanant toute les pièces dessinées sur le canvas pour les bougers plus facilement.
-		i  					ligne de la dernière pièce selectionnée
-		j  					collne de la dernière pièce selectionnée
+		selected_object  		contient l'objet qui est sélectionné est à false par défaut
+		pawn  				dictionnaire contenant toute les pièces dessinées sur le canvas pour les bouger plus facilement.
+		i  				ligne de la dernière pièce selectionnée
+		j  				colonne de la dernière pièce selectionnée
 		player  			joueur de la dernière pièce selectionnée
 	"""
 
@@ -406,7 +406,7 @@ class Board(tk.Canvas):
 		self.selected_object = False
 
 
-		# Dessin des cases et des pieces
+		# Dessin des cases et des pièces
 		for k in range(len(board)):
 			for l in range(len(board)):
 				if (k-l)%2 == 1 :
@@ -418,7 +418,7 @@ class Board(tk.Canvas):
 
 	def draw_Piece(self, board):
 		"""
-		Permat de dessiner les pieces du damier grace a un appel à create_pawn.
+		Permet de dessiner les pièces du damier grace a un appel à create_pawn.
 		s'occupe aussi de la création du dictionnaire de pièces.
 		"""
 		i, j = 0,0
@@ -450,7 +450,7 @@ class Board(tk.Canvas):
 
 	def select_piece(self, event):
 		"""
-		S'occupe de la selection des pieces lorsqu'un event est généré sur le canvas (clic de souris)
+		S'occupe de la sélection des pièces lorsqu'un event est généré sur le canvas (clic de souris)
 		"""
 		if self.parent.get_end is not False:
 			select_object=self.find_closest(event.x, event.y)
@@ -464,7 +464,7 @@ class Board(tk.Canvas):
 			elif select_object == self.selected_object:
 				self.deslecet_pawn()
 			
-			# on sélectionne une nouvelle case pour la piece
+			# on sélectionne une nouvelle case pour la pièce
 			else:
 				nex_i = event.y
 				nex_j = event.x
@@ -490,7 +490,7 @@ class Board(tk.Canvas):
 		j = self.pawn[select_object[0]][2]
 		player = int(self.pawn[select_object[0]][0])
 
-		# Vérification que c'est bien la piece du joueur.
+		# Vérification que c'est bien la pièce du joueur.
 		if (player==self.parent.get_player()*abs(player)):
 			self.itemconfig(select_object, fill="green")
 			self.selected_object = select_object
@@ -507,7 +507,7 @@ class Board(tk.Canvas):
 
 	def deslecet_pawn(self):
 		"""
-		Quand on reclique sur une piece pour la deselctionner.
+		Quand on reclique sur une pièce pour la désélectionner.
 		"""
 		if self.selected_object:
 
@@ -516,7 +516,7 @@ class Board(tk.Canvas):
 			else:
 				self.itemconfig(self.selected_object, fill="black")
 
-			# Si on a loué, on termine le tour.
+			# Si on a joué, on termine le tour.
 			if self.parent.get_hasPlayed():
 				self.parent.king(self.pawn[self.selected_object[0]][1],self.pawn[self.selected_object[0]][2])
 				self.parent.set_hasCaptured(False)
@@ -527,7 +527,7 @@ class Board(tk.Canvas):
 
 	def inverse(self):
 		"""
-		Inverse toute les pieces du damier lors du changement de joueur.
+		Inverse toutes les pièces du damier lors du changement de joueur.
 		"""
 		for i in self.pawn:
 			if self.inversed == 1:
@@ -573,7 +573,7 @@ class Board(tk.Canvas):
 
 	def king(self, i, j):
 		"""
-		Transforme une piece du damier en damme.
+		Transforme une pièce du damier en dame.
 		"""
 		pawn = self.find_closest(self.ratio*j+self.ratio//2,self.ratio*i+self.ratio//2)
 		self.itemconfig(pawn, width=5, outline="red")
@@ -582,17 +582,17 @@ class Board(tk.Canvas):
 
 class help_window(tk.Tk):
 	"""
-	Cette classe permet d'afficher la fenètre d'aide.
+	Cette classe permet d'afficher la fenêtre d'aide.
 
 	Elle est héritée de la classe Tk du module tkinter
 
 	Elle n'a comme fonction que:
-		__init__() 		charge les différents éléments de la fenètre d'aide.
+		__init__() 		charge les différents éléments de la fenêtre d'aide.
 	"""
 
 	def __init__(self):
 		"""
-		Initialise la fenètre d'aide.
+		Initialise la fenêtre d'aide.
 		"""
 		tk.Tk.__init__(self)
 		self.title('Aide')
@@ -615,25 +615,25 @@ class help_window(tk.Tk):
 		white_king.create_oval(5,5,45,45, fill = "white", outline = "red", width=5)
 		black_king.create_oval(5,5,45,45, fill = "black", outline = "red", width=5)
 		tk.Label(self, text="Pions blancs").grid(row=1, column=1, sticky=tk.W, padx=5, pady =2)
-		tk.Label(self, text="Dammes blanches").grid(row=2, column=1, sticky=tk.W, padx=5, pady =2)
+		tk.Label(self, text="Dames blanches").grid(row=2, column=1, sticky=tk.W, padx=5, pady =2)
 		tk.Label(self, text="Pions noirs").grid(row=1, column=2, sticky=tk.E, padx=5, pady =2)
-		tk.Label(self, text="Dammes noires").grid(row=2, column=2, sticky=tk.E, padx=5, pady =2)
+		tk.Label(self, text="Dames noires").grid(row=2, column=2, sticky=tk.E, padx=5, pady =2)
 
-		# Expications des rêgles de base
+		# Explications des règles de base
 		tk.Label(self, text="Règles:", font = underline).grid(row = 3, columnspan=4, pady=5)
 		tk.Label(self, text="Déplacements:", font = underline_petit).grid(row = 4, column = 0, sticky = tk.N + tk.E, pady = 3, padx = 5)
 		deplacement = "Les pions ne peuvent se déplacer que d'une seule case en diagonale\n"
 		deplacement += "et ne peuvent aller en arrière sauf pour prendre.\n\n"
-		deplacement += "Les dammes peuvent se déplacer dans n'importe qu'elle diagonale\n"
-		deplacement+= "et du nombre de autant de case possible tant que le chemain est libre."
+		deplacement += "Les dames peuvent se déplacer dans n'importe quelle diagonale\n"
+		deplacement+= "et du nombre d'autant de case possible tant que le chemin est libre."
 		tk.Label(self, text=deplacement, justify=tk.LEFT).grid(row=4, column = 1, columnspan =3, sticky = tk.W, pady = 3, padx = 5)
 
 		# Explication pour les prises
 		tk.Label(self, text="Prise:", font = underline_petit).grid(row=5, column=0, sticky=tk.N + tk.E, pady = 5, padx = 5)
 		prise = "Pour prendre un pion à l'adversaire, il faut être à une case si on a un pion\n"
-		prise += "Les dames doivent être dans la même diadonale et qu'il n'y aie aucun pion dans le chemin.\n\n"
+		prise += "Les dames doivent être dans la même diagonale et qu'il n'y ait aucun pion dans le chemin.\n\n"
 		prise+="Il faut ensuite une place libre après le pion dans la même direction.\n"
-		prise += "La damme est obligé de s'arrèté juste après le pion.\n\n"
+		prise += "La dame est obligée de s'arrêter juste après le pion.\n\n"
 		prise += "Après une prise, on peut continuer à prendre."
 		tk.Label(self, text = prise, justify=tk.LEFT).grid(row = 5, column = 1, columnspan = 3, sticky = tk.W, pady = 5, padx = 5)
 
