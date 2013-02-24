@@ -7,7 +7,6 @@ import tkinter.font as font
 from config import *
 from draughtsFunctions import *
 
-# Commentaire + dock_string
 
 class Interface(tk.Tk):
 	"""
@@ -191,7 +190,7 @@ class Interface(tk.Tk):
 				self.black_capture_label.configure(text = self.black_capture)
 
 				# Création du damier
-				self.canv = Board(self, 'white', self.board_length, self.board, new_player)
+				self.canv = Board(self, 'white', self.board_length, self.board)
 				self.canv.grid(row=2, column=2, rowspan=len(self.board), columnspan = len(self.board))
 
 				# Inversion du damier si c'est aux noirs de jouer.
@@ -392,27 +391,39 @@ class Board(tk.Canvas):
 		player  			joueur de la dernière pièce selectionnée
 	"""
 
-	def __init__(self,parent, bg, length, board, inversed = 1):
+	def __init__(self,parent, bg, length, board):
+		"""
+		Initialise le canvas et ses attributs.
+		"""
 		tk.Canvas.__init__(self,parent, bg=bg, height=length, width=length)
+
+		# Attributs
 		self.length = length
 		self.len_board = len(board)
 		self.ratio = (length/len(board))
 		self.parent = parent
+		self.inversed = 1
+		self.selected_object = False
+
+
+		# Dessin des cases et des pieces
 		for k in range(len(board)):
 			for l in range(len(board)):
 				if (k-l)%2 == 1 :
 					self.create_rectangle(self.ratio*l,self.ratio*k, self.ratio*l+self.ratio, self.ratio*k+self.ratio, fill = "black")
 		self.draw_Piece(board)
-		self.inversed = inversed
-
-
-
-		self.selected_object = False
+		
+		# Evenement
 		self.bind("<Button-1>", self.select_piece)
 
 	def draw_Piece(self, board):
+		"""
+		Permat de dessiner les pieces du damier grace a un appel à create_pawn.
+		s'occupe aussi de la création du dictionnaire de pièces.
+		"""
 		i, j = 0,0
 		self.pawn = {}
+
 		for k in range(len(board)):
 			for l in range(len(board)):
 				player = board[k][l]
@@ -425,6 +436,9 @@ class Board(tk.Canvas):
 			j+=1
 			
 	def create_pawn(self, ratio, i, j, player, king = False):
+		"""
+		Dessine les pièces sur le canvas
+		"""
 		line = "white"
 		width = 2
 		if king:
@@ -435,15 +449,22 @@ class Board(tk.Canvas):
 		return self.create_oval(ratio*i+5,ratio*j+5,ratio*i+ratio-5,ratio*j+ratio-5, outline = line, fill = color, width=width)
 
 	def select_piece(self, event):
+		"""
+		S'occupe de la selection des pieces lorsqu'un event est généré sur le canvas (clic de souris)
+		"""
 		if self.parent.get_end is not False:
 			select_object=self.find_closest(event.x, event.y)
+
+			# On sélectionne une nouvele pièce
 			if not self.selected_object:
 				if select_object[0] in self.pawn:
 					self.select_new_pawn(select_object)
 
+			# On désélectionne la pièce
 			elif select_object == self.selected_object:
 				self.deslecet_pawn()
-					
+			
+			# on sélectionne une nouvelle case pour la piece
 			else:
 				nex_i = event.y
 				nex_j = event.x
@@ -454,14 +475,22 @@ class Board(tk.Canvas):
 				if self.inversed == -1:
 					nex_i = self.len_board - 1- nex_i
 					nex_j = self.len_board - 1- nex_j
+
+				# appel vers la fonction move générale.
 				self.parent.move(i, j, nex_i, nex_j, self.player)
+
 		else:
 			messagebox.showinfo("Fin", "La partie est déja finie.")
 
 	def select_new_pawn(self, select_object):
+		"""
+		Sélection d'une nouvelle piece.
+		"""
 		i = self.pawn[select_object[0]][1]
 		j = self.pawn[select_object[0]][2]
 		player = int(self.pawn[select_object[0]][0])
+
+		# Vérification que c'est bien la piece du joueur.
 		if (player==self.parent.get_player()*abs(player)):
 			self.itemconfig(select_object, fill="green")
 			self.selected_object = select_object
@@ -471,16 +500,23 @@ class Board(tk.Canvas):
 				self.player = WHITE_PLAYER
 			elif player < 0:
 				self.player = BLACK_PLAYER
+
 		else:
 			self.parent.show_error(OPPONENT_PIECE)
 
 
 	def deslecet_pawn(self):
+		"""
+		Quand on reclique sur une piece pour la deselctionner.
+		"""
 		if self.selected_object:
+
 			if self.pawn[self.selected_object[0]][0] == WHITE_PLAYER:
 				self.itemconfig(self.selected_object, fill="white")
 			else:
 				self.itemconfig(self.selected_object, fill="black")
+
+			# Si on a loué, on termine le tour.
 			if self.parent.get_hasPlayed():
 				self.parent.king(self.pawn[self.selected_object[0]][1],self.pawn[self.selected_object[0]][2])
 				self.parent.set_hasCaptured(False)
@@ -490,7 +526,9 @@ class Board(tk.Canvas):
 			self.selected_object = False
 
 	def inverse(self):
-
+		"""
+		Inverse toute les pieces du damier lors du changement de joueur.
+		"""
 		for i in self.pawn:
 			if self.inversed == 1:
 				y= self.len_board -1 - self.pawn[i][1]
@@ -498,29 +536,45 @@ class Board(tk.Canvas):
 			else:
 				y= self.pawn[i][1]
 				x= self.pawn[i][2]
+
 			self.coords(i, self.ratio*x+5, self.ratio*y+5, self.ratio*x+self.ratio-5, self.ratio*y+self.ratio-5)
+
 		self.inversed *=-1
 
 	def move(self, next):
+		"""
+		Bouge une pièce sur le damier.
+		"""
 		i,j =next
 		k,l = j,i
 		if self.inversed == -1:
 			k = self.len_board -1 -k
 			l = self.len_board -1 -l
+
 		self.coords(self.selected_object, self.ratio*k+5, self.ratio*l+5, self.ratio*k+self.ratio-5, self.ratio*l+self.ratio-5)
+
 		self.pawn[self.selected_object[0]][1] = i
 		self.pawn[self.selected_object[0]][2] = j
+
 		self.i, self.j = i, j
 
 	def delete_pawn(self, i, j):
+		"""
+		supprime une pièce du damier
+		"""
 		if self.inversed == -1:
 			i = self.len_board -1 -i
 			j = self.len_board -1 -j
+
 		pawn = self.find_closest(self.ratio*j+self.ratio//2,self.ratio*i+self.ratio//2)
 		del self.pawn[pawn[0]]
+
 		self.delete(pawn)
 
 	def king(self, i, j):
+		"""
+		Transforme une piece du damier en damme.
+		"""
 		pawn = self.find_closest(self.ratio*j+self.ratio//2,self.ratio*i+self.ratio//2)
 		self.itemconfig(pawn, width=5, outline="red")
 
