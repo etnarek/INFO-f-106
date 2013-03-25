@@ -264,24 +264,18 @@ def checkMove(board, i, j, direction, player, length=1, hasPlayed=False, hasCapt
 	else:
 		new_i = i
 		new_j = j
-		try:
-			if direction[1] == 'B':
-				if direction[0] == 'L':
-					new_i += length * player
-					new_j -= length * player
+		back = 1
+		if direction[-1] == 'B' :
+			back = -1 
 
-				elif direction[0] == 'R':
-					new_i += length * player
-					new_j += length * player
-		except:
-			if direction[0] == 'L':
-				new_i -= length * player
-				new_j -= length * player
+		if direction[0] == 'L':
+			new_i -= length * player * back
+			new_j -= length * player 
 
-			elif direction[0] == 'R':
-				new_i -= length * player
-				new_j += length * player
-
+		elif direction[0] == 'R':
+			new_i -= length * player * back
+			new_j += length * player
+		
 		if new_i >= len(board) or new_j >= len(board):
 			errCode = CANNOT_GO_OUTSIDE
 
@@ -293,22 +287,14 @@ def checkMove(board, i, j, direction, player, length=1, hasPlayed=False, hasCapt
 
 		elif board[new_i][new_j] != 0:
 			capture = (new_i, new_j)
-			try:
-				if direction[1] == 'B':
-					if direction[0] == 'L':
-						new_i += player
-						new_j -= player
-					elif direction[0] == 'R':
-						new_i += player
-						new_j += player
+			if direction[0] == 'L':
+				new_i -= length * player * back
+				new_j -= length * player 
 
-			except:
-				if direction[0] == 'L':
-					new_i -= player
-					new_j -= player
-				elif direction[0] == 'R':
-					new_i -= player
-					new_j += player
+			elif direction[0] == 'R':
+				new_i -= length * player * back
+				new_j += length * player
+				
 			if new_i >= len(board) or new_j >= len(board):
 				errCode = CANNOT_JUMP_OUTSIDE
 
