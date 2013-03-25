@@ -213,6 +213,37 @@ def becomeKing(board, i, j):
 		res = True
 	return res
 
+def checkCapture(board, i, j, direction, player, length):
+	"""
+	Regarde si on capture un pièce lorsqu'on veut faire un coup.
+	"""
+	capture = False
+	if length > 0:
+		back = 1
+		if direction[-1] == 'B' :
+			back = -1 
+
+		if direction[0] == 'L':
+			i -= length * player * back
+			j -= length * player 
+
+		elif direction[0] == 'R':
+			i -= length * player * back
+			j += length * player 
+
+		if board[i][j] == player * -1:
+
+			if direction[0] == 'L':
+				i -= player * back
+				j -= player
+			elif direction[0] == 'R':
+				i -= player * back
+				j += player
+			if board[i][j] == 0:
+				capture = True
+	return capture
+
+
 
 def checkMove(board, i, j, direction, player, length=1, hasPlayed=False, hasCaptured=False, capture_info = False):
 	"""

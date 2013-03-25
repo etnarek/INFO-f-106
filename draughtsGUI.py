@@ -247,11 +247,10 @@ class Interface(tk.Tk):
 
 			# Vérifier que le message d'erreur n'est pas à cause de l'envie de manger une pièce.
 			if errorMessge == PAWN_ONLY_ONE_MOVE or errorMessge == NO_FREE_WAY:
-				errorMessge, captured = checkMove(self.board, i, j, direction, player, length-1, self.hasPlayed, self.hasCaptured, True)
-				if errorMessge == NO_ERROR and captured:
+				captured = checkCapture(self.board, i, j, direction, player, length - 1)
+				if captured:
 					length-=1
-				else:
-					errorMessge = PAWN_ONLY_ONE_MOVE
+					errorMessge = NO_ERROR
 
 			if errorMessge == NO_ERROR:
 
