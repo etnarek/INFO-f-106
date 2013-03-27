@@ -4,6 +4,7 @@ import tkinter as tk
 import tkinter.filedialog as filedialog
 import tkinter.messagebox as messagebox
 import tkinter.font as font
+import random
 from config import *
 from draughtsFunctions import *
 
@@ -350,6 +351,9 @@ class Interface(tk.Tk):
 	def get_end(self):
 		return self.end
 
+	def get_board(self):
+		return self.board
+
 	# setter
 	def set_hasPlayed(self, bool):
 		self.hasPlayed = bool
@@ -636,6 +640,81 @@ class help_window(tk.Tk):
 		prise += "Après une prise, on peut continuer à prendre."
 		tk.Label(self, text = prise, justify=tk.LEFT).grid(row = 5, column = 1, columnspan = 3, sticky = tk.W, pady = 5, padx = 5)
 
+class Computer(object):
+	"""docstring for Computer"""
+	def __init__(self, parent, board, color):
+		"""
+		"""
+		self.pawn = []
+		for i in range(len(board)):
+			for j in range(len(board)):
+				if board[i][j] * color == 1:
+					self.pawn.append((i,j,False))
+				elif board[i][j] * color >= 2:
+					self.pawn.append((i,j,True))
+		self.color = color
+		self.parent = parent
+
+	def findMove(self): # changer les nonms des variables pour une mailleur compréhension
+		"""
+		"""
+		found = False
+		board = parent.get_board()
+		directions = ['L', 'R', 'LB', 'RB']
+
+		if len(self.pawn > 10):
+			pawn = random.sample(self.pawn, 10)
+		else:
+			pawn = self.pawn
+
+		# Regarde si on peut capturer une pièce (parmi 10)
+		k = 0
+		while not found and k < len(pawn):
+			i = pawn[k][0]
+			j = pawn[k][1]
+
+			for direction in directions:
+				length = countFree(parent.get_board(), i, j, direction, color)+1
+				if checkCapture(board, i , j, direction, color, length):
+					if checkMove(board, i, j, direction, color, length):
+						return (i,j,direction)
+			k+=1					
+
+		# Regarde si on peut bouger une pièce sans être capturé (parmi 10)
+		if len(self.pawn > 10):
+			pawn = random.sample(self.pawn, 10)
+		else:
+			pawn = self.pawn
+
+		k = 0
+		while not found and k < len(pawn):
+			i = pawn[k][0]
+			j = pawn[k][1]
+
+			for direction in directions:
+				length = countFree(parent.get_board(), i, j, direction, color)-1
+				if length > 0:
+					if checkMove(board, i, j, direction, color, length):
+
+						# Ajouter le cas où il y a une pièce qui n'est pas sur le sens de la capture.
+
+						return (i,j,direction)
+			k+=1
+
+		# Sinon, on essaye de bouger une des pièces.
+		while  not found and k < len(self.pawn):
+			i = self.pawn[k][0]
+			j = self.pawn[k][1]
+
+			for direction in directions:
+				length = countFree(parent.get_board(), i, j, direction, color)
+				if checkMove(board, i, j, direction, color, length):
+					return (i,j,direction)
+			k+=1
+
+
+
+		
 
 if __name__ == '__main__':
 	fenetre = Interface()
