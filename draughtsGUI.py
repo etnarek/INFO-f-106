@@ -669,7 +669,7 @@ class Computer(object):
 
 		# Regarde si on peut capturer une pièce (parmi 10)
 		k = 0
-		while not found and k < len(pawn):
+		while k < len(pawn):
 			i = pawn[k][0]
 			j = pawn[k][1]
 
@@ -677,7 +677,7 @@ class Computer(object):
 				length = countFree(parent.get_board(), i, j, direction, color)+1
 				if checkCapture(board, i , j, direction, color, length):
 					if checkMove(board, i, j, direction, color, length):
-						return (i,j,direction)
+						return i, j, direction
 			k+=1					
 
 		# Regarde si on peut bouger une pièce sans être capturé (parmi 10)
@@ -687,7 +687,7 @@ class Computer(object):
 			pawn = self.pawn
 
 		k = 0
-		while not found and k < len(pawn):
+		while k < len(pawn):
 			i = pawn[k][0]
 			j = pawn[k][1]
 
@@ -695,21 +695,19 @@ class Computer(object):
 				length = countFree(parent.get_board(), i, j, direction, color)-1
 				if length > 0:
 					if checkMove(board, i, j, direction, color, length):
-
-						# Ajouter le cas où il y a une pièce qui n'est pas sur le sens de la capture.
-
-						return (i,j,direction)
+						if (board[i+2][j] == -color and board[i][j+2] == 0) or (board[i][j+2] == -color and board[i+2][j] == 0):
+							return i, j, directions
 			k+=1
 
 		# Sinon, on essaye de bouger une des pièces.
-		while  not found and k < len(self.pawn):
+		while k < len(self.pawn):
 			i = self.pawn[k][0]
 			j = self.pawn[k][1]
 
 			for direction in directions:
 				length = countFree(parent.get_board(), i, j, direction, color)
 				if checkMove(board, i, j, direction, color, length):
-					return (i,j,direction)
+					return i, j, direction
 			k+=1
 
 
