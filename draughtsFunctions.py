@@ -332,22 +332,18 @@ def countFree(board, i, j, direction, player=None, length=0):
 	if board[i][j] != 0:
 		new_i = i
 		new_j = j
-		try:
-			if direction[1] == 'B':
-				if direction[0] == 'L':
-					new_i += length + player
-					new_j -= length + player
-				elif direction[0] == 'R':
-					new_i += length + player
-					new_j += length + player
+		back = 1
+		if direction[-1] == 'B' :
+			back = -1 
 
-		except:
-			if direction[0] == 'L':
-				new_i -= length + player
-				new_j -= length + player
-			elif direction[0] == 'R':
-				new_i -= length + player
-				new_j += length + player
+		if direction[0] == 'L':
+			new_i -= length * player * back
+			new_j -= length * player 
+
+		elif direction[0] == 'R':
+			new_i -= length * player * back
+			new_j += length * player
+			
 		if new_i < len(board) and new_j < len(board):
 			if board[new_i][new_j] == 0:
 				length = countFree(board, i, j, direction, player, length + 1)
