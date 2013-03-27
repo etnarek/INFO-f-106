@@ -451,7 +451,7 @@ class Board(tk.Canvas):
 		"""
 		S'occupe de la sélection des pièces lorsqu'un event est généré sur le canvas (clic de souris)
 		"""
-		if self.parent.get_end is not False:
+		if not self.parent.get_end():
 			select_object=self.find_closest(event.x, event.y)
 
 			# On sélectionne une nouvele pièce
