@@ -118,8 +118,10 @@ class Interface(tk.Tk):
 		self.bind("<Control-n>",self.new_game)
 		self.bind("<Control-s>",self.save_game)
 		self.bind("<Control-o>",self.load_game)
+		self.bind("<Control-q>",self.exit)
 
-
+	def exit(self, event):
+		self.quit()	
 
 	def new_game(self, event = None):
 		"""
