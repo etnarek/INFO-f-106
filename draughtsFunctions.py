@@ -231,16 +231,18 @@ def checkCapture(board, i, j, direction, player, length):
 			i -= length * player * back
 			j += length * player 
 
-		if board[i][j] == player * -1:
+		if 0 <= i < len(board) and 0 <= j < len(board[i]):
+			if board[i][j] == player * -1:
 
-			if direction[0] == 'L':
-				i -= player * back
-				j -= player
-			elif direction[0] == 'R':
-				i -= player * back
-				j += player
-			if board[i][j] == 0:
-				capture = True
+				if direction[0] == 'L':
+					i -= player * back
+					j -= player
+				elif direction[0] == 'R':
+					i -= player * back
+					j += player
+				if 0 <= i < len(board) and 0 <= j < len(board[i]):
+					if board[i][j] == 0:
+						capture = True
 	return capture
 
 
@@ -343,7 +345,7 @@ def countFree(board, i, j, direction, player=None, length=0):
 		elif direction[0] == 'R':
 			new_i -= length * player * back
 			new_j += length * player
-			
+
 		if new_i < len(board) and new_j < len(board):
 			if board[new_i][new_j] == 0:
 				length = countFree(board, i, j, direction, player, length + 1)

@@ -71,6 +71,8 @@ class Interface(tk.Tk):
 		self.hasPlayed = False
 		self.hasCaptured = False
 		self.end = False
+		self.white_player = None
+		self.black_player = None
 
 		#joueur en cours
 		self.current_player = tk.Label(self, text='Joueur en cours: Blanc',font = underline, padx=5, pady=5)
@@ -111,7 +113,8 @@ class Interface(tk.Tk):
 		tk.Button(self.frame_button, text='Nouveau jeu', command=self.new_game).grid(row = 0, column=0, padx = 2)
 		tk.Button(self.frame_button, text='Sauvegarder', command=self.save_game).grid(row = 0, column=1, padx = 2)
 		tk.Button(self.frame_button, text='Charger', command=self.load_game).grid(row = 0, column=2, padx = 2)
-		tk.Button(self.frame_button, text='Aide', command=self.help).grid(row = 0, column=3, padx = 2)
+		tk.Button(self.frame_button, text='IA', command=self.startIa).grid(row = 0, column=3, padx = 2)
+		tk.Button(self.frame_button, text='Aide', command=self.help).grid(row = 0, column=4, padx = 2)
 
 		# Gestion d'événement
 		self.bind("<F1>", self.help)
@@ -143,6 +146,8 @@ class Interface(tk.Tk):
 			self.black_capture = 0
 			self.white_capture_label.configure(text = self.white_capture)
 			self.black_capture_label.configure(text = self.black_capture)
+			self.white_player = None
+			self.black_player = None
 
 			# Recréation du canvas
 			self.canv = Board(self, 'white', self.board_length, self.board)
@@ -344,6 +349,47 @@ class Interface(tk.Tk):
 		"""
 		messagebox.showerror("Erreur", strerr(err_code))
 
+	def startIa(self):
+		if messagebox.askyesno('IA', "Voulez-vous que l'IA joue les noirs? (sinon les blancs)"):
+			self.black_player = Computer(self, self.board, -1)
+		else:
+			self.white_player = Computer(self, self.board, 1)
+
+	def nextPlaying(self):
+		print("next")
+		if self.player == WHITE_PLAYER:
+			if self.white_player is not None:
+				self.playIa(WHITE_PLAYER)
+		else:
+			if self.black_player is not None:
+				self.playIa(BLACK_PLAYER)
+
+	def playIa(self, player):
+		if player == WHITE_PLAYER:
+			ia = self.white_player
+		else:
+			ia = self.black_player
+
+		coord = ia.findMove()
+
+		self.canv.select(coord[0], coord[1])
+
+		captured = movePiece(self.board, coord[0], coord[1], coord[2], coord[3])
+		self.canv.move(captured[0])
+		printBoard(self.board, 1)
+		ia.move((coord[0], coord[1]),captured[0])
+		self.hasPlayed = True
+		self.canv.deselect_pawn()
+
+		# On s'occupe de la capture s'il faut
+		if captured[1]:
+			self.capture(captured)
+		
+		# On regarde si le jeu n'est pas terminé.
+		self.end = checkEndOfGame(self.board, player)
+		if self.end is not False:
+			self.show_end()
+
 
 	# getter:
 	def get_player(self):
@@ -453,6 +499,16 @@ class Board(tk.Canvas):
 
 		return self.create_oval(ratio*i+5,ratio*j+5,ratio*i+ratio-5,ratio*j+ratio-5, outline = line, fill = color, width=width)
 
+	def select(self, i, j):
+		if self.inversed == -1:
+			i = self.len_board -1 -i
+			j = self.len_board -1 -j
+
+		i = i*self.ratio + self.ratio//2
+		j = j*self.ratio + self.ratio//2
+		select_object = self.find_closest(j, i)
+		self.select_new_pawn(select_object)
+
 	def select_piece(self, event):
 		"""
 		S'occupe de la sélection des pièces lorsqu'un event est généré sur le canvas (clic de souris)
@@ -467,7 +523,7 @@ class Board(tk.Canvas):
 
 			# On désélectionne la pièce
 			elif select_object == self.selected_object:
-				self.deslecet_pawn()
+				self.deselect_pawn()
 			
 			# on sélectionne une nouvelle case pour la pièce
 			else:
@@ -510,25 +566,27 @@ class Board(tk.Canvas):
 			self.parent.show_error(OPPONENT_PIECE)
 
 
-	def deslecet_pawn(self):
+	def deselect_pawn(self):
 		"""
 		Quand on reclique sur une pièce pour la désélectionner.
 		"""
 		if self.selected_object:
+			selected_object = self.selected_object
+			self.selected_object = False
 
-			if self.pawn[self.selected_object[0]][0] == WHITE_PLAYER:
-				self.itemconfig(self.selected_object, fill="white")
+			if self.pawn[selected_object[0]][0] == WHITE_PLAYER:
+				self.itemconfig(selected_object, fill="white")
 			else:
-				self.itemconfig(self.selected_object, fill="black")
+				self.itemconfig(selected_object, fill="black")
 
 			# Si on a joué, on termine le tour.
 			if self.parent.get_hasPlayed():
-				self.parent.king(self.pawn[self.selected_object[0]][1],self.pawn[self.selected_object[0]][2])
+				self.parent.king(self.pawn[selected_object[0]][1],self.pawn[selected_object[0]][2])
 				self.parent.set_hasCaptured(False)
 				self.parent.set_hasPlayed(False)
 				self.parent.inverse()
+				self.parent.nextPlaying()
 
-			self.selected_object = False
 
 	def inverse(self):
 		"""
@@ -661,10 +719,10 @@ class Computer(object):
 		"""
 		"""
 		found = False
-		board = parent.get_board()
+		board = self.parent.get_board()
 		directions = ['L', 'R', 'LB', 'RB']
 
-		if len(self.pawn > 10):
+		if len(self.pawn) > 10:
 			pawn = random.sample(self.pawn, 10)
 		else:
 			pawn = self.pawn
@@ -676,14 +734,17 @@ class Computer(object):
 			j = pawn[k][1]
 
 			for direction in directions:
-				length = countFree(parent.get_board(), i, j, direction, color)+1
-				if checkCapture(board, i , j, direction, color, length):
-					if checkMove(board, i, j, direction, color, length):
-						return i, j, direction
+				if abs(board[i][j]) >1:
+					length = countFree(board, i, j, direction, self.color)
+				else:
+					length = 1				
+				if checkCapture(board, i , j, direction, self.color, length):
+					if checkMove(board, i, j, direction, self.color, length) == NO_ERROR:
+						return i, j, direction, length
 			k+=1					
 
 		# Regarde si on peut bouger une pièce sans être capturé (parmi 10)
-		if len(self.pawn > 10):
+		if len(self.pawn) > 10:
 			pawn = random.sample(self.pawn, 10)
 		else:
 			pawn = self.pawn
@@ -694,23 +755,32 @@ class Computer(object):
 			j = pawn[k][1]
 
 			for direction in directions:
-				length = countFree(parent.get_board(), i, j, direction, color)-1
+				length = countFree(board, i, j, direction, self.color)-1
 				if length > 0:
-					if checkMove(board, i, j, direction, color, length):
-						if (board[i+2][j] == -color and board[i][j+2] == 0) or (board[i][j+2] == -color and board[i+2][j] == 0):
-							return i, j, directions
+					if abs(board[i][j]) == 1:
+						length = 1
+					if checkMove(board, i, j, direction, self.color, length) == NO_ERROR:
+						if (board[i+2][j] == -self.color and board[i][j+2] == 0) or (board[i][j+2] == -self.color and board[i+2][j] == 0):
+							return i, j, directions, length
 			k+=1
 
 		# Sinon, on essaye de bouger une des pièces.
+		k = 0
+		print(1)
 		while k < len(self.pawn):
 			i = self.pawn[k][0]
 			j = self.pawn[k][1]
-
+			print(2)
 			for direction in directions:
-				length = countFree(parent.get_board(), i, j, direction, color)
-				if checkMove(board, i, j, direction, color, length):
-					return i, j, direction
+				if abs(board[i][j]) >1:
+					length = countFree(board, i, j, direction, self.color)
+				else:
+					length = 1
+				if checkMove(board, i, j, direction, self.color, 1) == NO_ERROR:
+					return i, j, direction, 1
 			k+=1
+	def move(self,start, end):
+		pass
 
 
 
