@@ -290,14 +290,15 @@ def checkMove(board, i, j, direction, player, length=1, hasPlayed=False, hasCapt
 		elif board[new_i][new_j] != 0:
 			capture = (new_i, new_j)
 			if direction[0] == 'L':
-				new_i -= length * player * back
-				new_j -= length * player 
+				new_i -= player * back
+				new_j -= player 
 
 			elif direction[0] == 'R':
-				new_i -= length * player * back
-				new_j += length * player
+				new_i -= player * back
+				new_j += player
+			print(new_i,new_j)
 				
-			if new_i >= len(board) or new_j >= len(board):
+			if not (0 <= new_i < len(board)) or not(0 <= new_j < len(board)):
 				errCode = CANNOT_JUMP_OUTSIDE
 
 			elif board[new_i][new_j] != 0 and board[new_i][new_j] * player < 0:
