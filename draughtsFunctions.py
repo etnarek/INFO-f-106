@@ -247,7 +247,7 @@ def checkCapture(board, i, j, direction, player, length):
 
 
 
-def checkMove(board, i, j, direction, player, length=1, hasPlayed=False, hasCaptured=False, capture_info = False):
+def checkMove(board, i, j, direction, player, length=1, hasPlayed=False, hasCaptured=False):
 	"""
 	Regarde si le coup voulant être joué par player est possible et renvoye True dans ce cas.
 	Sinon renvoie pourquoi le pion ne peut etre bougé.
@@ -317,8 +317,6 @@ def checkMove(board, i, j, direction, player, length=1, hasPlayed=False, hasCapt
 					errCode = NO_ERROR
 			else:
 				errCode = NO_ERROR
-	if capture_info:
-		errCode = (errCode, capture)
 	return errCode
 
 
