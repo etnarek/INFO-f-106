@@ -337,9 +337,9 @@ class Interface(tk.Tk):
 		Initialise une ia pour la couleur reçue avec la messagebox.
 		"""
 		if messagebox.askyesno('IA', "Voulez-vous que l'IA joue les noirs? (sinon les blancs)"):
-			self.black_player = Computer(self, self.board, -1)
+			self.black_player = Computer(self, self.board, BLACK_PLAYER)
 		else:
-			self.white_player = Computer(self, self.board, 1)
+			self.white_player = Computer(self, self.board, WHITE_PLAYER)
 
 	def nextPlaying(self):
 		"""
@@ -440,6 +440,7 @@ class Board(tk.Canvas):
 		self.length = length
 		self.len_board = len(board)
 		self.ratio = (length/len(board))
+		self.border = 5
 		self.parent = parent
 		self.inversed = 1
 		self.selected_object = False
@@ -478,6 +479,7 @@ class Board(tk.Canvas):
 		"""
 		Dessine les pièces sur le canvas
 		"""
+		bd = self.border # Sinon la ligne s'allonge
 		line = "white"
 		width = 2
 		if king:
@@ -485,7 +487,7 @@ class Board(tk.Canvas):
 			width = 5
 		color = "white" if player > 0 else "black"
 
-		return self.create_oval(ratio*i+5,ratio*j+5,ratio*i+ratio-5,ratio*j+ratio-5, outline = line, fill = color, width=width)
+		return self.create_oval(ratio*i+bd,ratio*j+bd,ratio*i+ratio-bd,ratio*j+ratio-bd, outline = line, fill = color, width=width)
 
 	def select(self, i, j):
 		if self.inversed == -1:
@@ -580,6 +582,7 @@ class Board(tk.Canvas):
 		"""
 		Inverse toutes les pièces du damier lors du changement de joueur.
 		"""
+		bd = self.border # Sinon la ligne s'allonge
 		for i in self.pawn:
 			if self.inversed == 1:
 				y= self.len_board -1 - self.pawn[i][1]
@@ -588,7 +591,7 @@ class Board(tk.Canvas):
 				y= self.pawn[i][1]
 				x= self.pawn[i][2]
 
-			self.coords(i, self.ratio*x+5, self.ratio*y+5, self.ratio*x+self.ratio-5, self.ratio*y+self.ratio-5)
+			self.coords(i, self.ratio*x+bd, self.ratio*y+bd, self.ratio*x+self.ratio-bd, self.ratio*y+self.ratio-bd)
 
 		self.inversed *=-1
 
@@ -596,13 +599,14 @@ class Board(tk.Canvas):
 		"""
 		Bouge une pièce sur le damier.
 		"""
+		bd = self.border # Sinon la ligne s'allonge
 		i,j =next
 		k,l = j,i
 		if self.inversed == -1:
 			k = self.len_board -1 -k
 			l = self.len_board -1 -l
 
-		self.coords(self.selected_object, self.ratio*k+5, self.ratio*l+5, self.ratio*k+self.ratio-5, self.ratio*l+self.ratio-5)
+		self.coords(self.selected_object, self.ratio*k+bd, self.ratio*l+bd, self.ratio*k+self.ratio-bd, self.ratio*l+self.ratio-bd)
 
 		self.pawn[self.selected_object[0]][1] = i
 		self.pawn[self.selected_object[0]][2] = j
@@ -648,21 +652,23 @@ class help_window(tk.Tk):
 		self.resizable(width=False, height=False)
 		underline = font.Font(self, underline = True)
 		underline_petit = font.Font(self, underline = True, size = 10)
+		ratio = 50
+		border = 5
 
 		# Aide sur les différents types de pions
 		tk.Label(self, text="Les différents pions:", font = underline).grid(row=0,columnspan=4,pady=5)
-		white_pawn = tk.Canvas(self, width = 50, height = 50, bg = "black")
-		black_pawn = tk.Canvas(self, width = 50, height = 50, bg = "black")
-		white_king = tk.Canvas(self, width = 50, height = 50, bg = "black")
-		black_king = tk.Canvas(self, width = 50, height = 50, bg = "black")
+		white_pawn = tk.Canvas(self, width = ratio, height = ratio, bg = "black")
+		black_pawn = tk.Canvas(self, width = ratio, height = ratio, bg = "black")
+		white_king = tk.Canvas(self, width = ratio, height = ratio, bg = "black")
+		black_king = tk.Canvas(self, width = ratio, height = ratio, bg = "black")
 		white_pawn.grid(row = 1, column = 0, padx=5, pady =2)
 		white_king.grid(row = 2, column = 0, padx=5, pady =2)
 		black_pawn.grid(row =1, column = 3, padx=5, pady =2)
 		black_king.grid(row =2, column = 3, padx=5, pady =2)
-		white_pawn.create_oval(5,5,45,45, fill = "white", outline = "white", width=2) # Dessins de pions
-		black_pawn.create_oval(5,5,45,45, fill = "black", outline = "white", width=2)
-		white_king.create_oval(5,5,45,45, fill = "white", outline = "red", width=5)
-		black_king.create_oval(5,5,45,45, fill = "black", outline = "red", width=5)
+		white_pawn.create_oval(border,border,ratio - border,ratio - border, fill = "white", outline = "white", width=2) # Dessins de pions
+		black_pawn.create_oval(border,border,ratio - border,ratio - border, fill = "black", outline = "white", width=2)
+		white_king.create_oval(border,border,ratio - border,ratio - border, fill = "white", outline = "red", width=5)
+		black_king.create_oval(border,border,ratio - border,ratio - border, fill = "black", outline = "red", width=5)
 		tk.Label(self, text="Pions blancs").grid(row=1, column=1, sticky=tk.W, padx=5, pady =2)
 		tk.Label(self, text="Dames blanches").grid(row=2, column=1, sticky=tk.W, padx=5, pady =2)
 		tk.Label(self, text="Pions noirs").grid(row=1, column=2, sticky=tk.E, padx=5, pady =2)
