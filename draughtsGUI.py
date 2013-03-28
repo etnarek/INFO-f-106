@@ -417,7 +417,7 @@ class Interface(tk.Tk):
 	def set_hasCaptured(self, bool):
 		self.hasCaptured = bool
 
-	
+
 class Board(tk.Canvas):
 	"""
 	cette classe s'occupe de dessiner le damier et de bouger les pions.
@@ -690,6 +690,12 @@ class help_window(tk.Tk):
 class Computer(object):
 	"""
 	Cette classe sert a creer une pseudo-inteligence artificiele.
+
+	Elle a comme fonction:
+		__init__(); findMove(); isCapturable(); move(); remove(); rafle()
+	et comme attributs:
+		pawn; color; parent
+
 	"""
 	def __init__(self, parent, board, color):
 		"""
@@ -818,7 +824,7 @@ class Computer(object):
 				return i,j,direction,length
 		return False
 
-		
+
 
 if __name__ == '__main__':
 	fenetre = Interface()
