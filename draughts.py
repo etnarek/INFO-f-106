@@ -3,13 +3,16 @@ from config import *
 from draughtsFunctions import *
 
 def play(player_now, board):
+    """
+    Fonction s'occupant du jeux, lorsque qu'un joueur veut bouger une pièce.
+    """
     rafle = True
     hasPlayed = False
     hasCaptured = False
     i, j = -1, -1
-    while rafle:
+    while rafle: # Si il y a une rafle ou que le joueur commence
         rafle = False
-        if i == -1 and j == -1:
+        if i == -1 and j == -1: # pas besoin de redemander les coordonées lors d'une rafle
             coordinates = input(
                 "Quel pion voulez-vous déplacer? Coordonnées du style a5: ")
             coordinates = coordinates.lower()
@@ -31,7 +34,7 @@ def play(player_now, board):
                 rafle = True
         else:
             printBoard(board, player_now)
-        if not rafle:
+        if not rafle: # sert à savoir s'il ne s'est pas trompé
             direction = input("Dans quelle direction doit se déplacer la pièce?(L/R), ajouter B pour aller en arrière: ")
             direction = direction.upper()
             if direction != "Q":
@@ -67,6 +70,9 @@ def play(player_now, board):
 
 
 def results(board, player_now):
+    """
+    Fonction affichant les résultats de la partie dans la console.
+    """
     if checkEndOfGame(board, player) == 0:
         print("*" * 70)
         print("La partie s'est terminée sur un nul.")
