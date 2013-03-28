@@ -320,6 +320,13 @@ class Interface(tk.Tk):
 		# Capture la pièce dans la matrice et sur le damier
 		capture(self.board, captured[1][0], captured[1][1])
 		self.canv.delete_pawn(captured[1][0], captured[1][1])
+		if self.player == BLACK_PLAYER:
+			if self.white_player is not None:
+				self.white_player.remove(captured[1][0], captured[1][1])
+		elif self.player == WHITE_PLAYER:
+			if self.black_player is not None:
+				self.black_player.remove(captured[1][0], captured[1][1])
+				
 		self.hasCaptured = True
 
 	def king(self, i, j):
@@ -356,7 +363,6 @@ class Interface(tk.Tk):
 			self.white_player = Computer(self, self.board, 1)
 
 	def nextPlaying(self):
-		print("next")
 		if self.player == WHITE_PLAYER:
 			if self.white_player is not None:
 				self.playIa(WHITE_PLAYER)
@@ -376,19 +382,33 @@ class Interface(tk.Tk):
 
 		captured = movePiece(self.board, coord[0], coord[1], coord[2], coord[3])
 		self.canv.move(captured[0])
-		printBoard(self.board, 1)
 		ia.move((coord[0], coord[1]),captured[0])
 		self.hasPlayed = True
-		self.canv.deselect_pawn()
 
 		# On s'occupe de la capture s'il faut
 		if captured[1]:
 			self.capture(captured)
+			self.rafleIa(ia, captured[0][0], captured[0][1])
 		
+		self.canv.deselect_pawn()
 		# On regarde si le jeu n'est pas terminé.
 		self.end = checkEndOfGame(self.board, player)
 		if self.end is not False:
 			self.show_end()
+
+	def rafleIa(self, ia, i, j):
+		coord = True
+		while self.hasCaptured and coord:
+			coord = ia.rafle(i,j)
+			if coord:
+				captured = movePiece(self.board, coord[0], coord[1], coord[2], coord[3])
+				self.canv.move(captured[0])
+				ia.move((coord[0], coord[1]),captured[0])
+				self.hasPlayed = True
+
+				# On s'occupe de la capture s'il faut
+				if captured[1]:
+					self.capture(captured)
 
 
 	# getter:
@@ -407,10 +427,8 @@ class Interface(tk.Tk):
 		self.hasPlayed = bool
 	def set_hasCaptured(self, bool):
 		self.hasCaptured = bool
+
 	
-
-
-
 class Board(tk.Canvas):
 	"""
 	cette classe s'occupe de dessiner le damier et de bouger les pions.
@@ -642,7 +660,6 @@ class Board(tk.Canvas):
 		self.itemconfig(pawn, width=5, outline="red")
 
 
-
 class help_window(tk.Tk):
 	"""
 	Cette classe permet d'afficher la fenêtre d'aide.
@@ -700,6 +717,7 @@ class help_window(tk.Tk):
 		prise += "Après une prise, on peut continuer à prendre."
 		tk.Label(self, text = prise, justify=tk.LEFT).grid(row = 5, column = 1, columnspan = 3, sticky = tk.W, pady = 5, padx = 5)
 
+
 class Computer(object):
 	"""docstring for Computer"""
 	def __init__(self, parent, board, color):
@@ -708,10 +726,8 @@ class Computer(object):
 		self.pawn = []
 		for i in range(len(board)):
 			for j in range(len(board)):
-				if board[i][j] * color == 1:
-					self.pawn.append((i,j,False))
-				elif board[i][j] * color >= 2:
-					self.pawn.append((i,j,True))
+				if board[i][j] * color > 0:
+					self.pawn.append([i,j,False])
 		self.color = color
 		self.parent = parent
 
@@ -766,23 +782,50 @@ class Computer(object):
 
 		# Sinon, on essaye de bouger une des pièces.
 		k = 0
-		print(1)
 		while k < len(self.pawn):
 			i = self.pawn[k][0]
 			j = self.pawn[k][1]
-			print(2)
 			for direction in directions:
 				if abs(board[i][j]) >1:
 					length = countFree(board, i, j, direction, self.color)
 				else:
 					length = 1
-				if checkMove(board, i, j, direction, self.color, 1) == NO_ERROR:
-					return i, j, direction, 1
+				if checkMove(board, i, j, direction, self.color, length) == NO_ERROR:
+					return i, j, direction, length
 			k+=1
+
 	def move(self,start, end):
-		pass
+		"""
+		"""
+		i,j = start
+		next_i, next_j = end
+		for k in self.pawn:
+			if k[0] == i and k[1] == j:
+				k[0] = next_i
+				k[1] = next_j
 
+	def remove(self, i, j):
+		"""
+		"""
+		found = False
+		k=0
+		while not found and k < len(self.pawn):
+			if self.pawn[k][0] == i and self.pawn[k][1] == j:
+				del self.pawn[k]
+				found = True
+			k+=1
 
+	def rafle(self, i, j):
+		directions = ['L', 'R', 'LB', 'RB']
+		board = self.parent.get_board()
+		for direction in directions:
+			if abs(board[i][j]) >1:
+				length = countFree(board, i, j, direction, self.color)
+			else:
+				length = 1
+			if checkMove(board, i, j, direction, self.color, length, True, True) == NO_ERROR:
+				return i,j,direction,length
+		return False
 
 		
 
