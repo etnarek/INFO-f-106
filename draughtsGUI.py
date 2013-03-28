@@ -122,6 +122,7 @@ class Interface(tk.Tk):
 		self.bind("<Control-s>",self.save_game)
 		self.bind("<Control-o>",self.load_game)
 		self.bind("<Control-q>",self.exit)
+		self.bind("<Control-i>",self.startIa)
 
 	def exit(self, event):
 		self.quit()	
@@ -319,6 +320,7 @@ class Interface(tk.Tk):
 
 		# Capture la pièce dans la matrice et sur le damier
 		capture(self.board, captured[1][0], captured[1][1])
+
 		self.canv.delete_pawn(captured[1][0], captured[1][1])
 		if self.player == BLACK_PLAYER:
 			if self.white_player is not None:
@@ -356,7 +358,7 @@ class Interface(tk.Tk):
 		"""
 		messagebox.showerror("Erreur", strerr(err_code))
 
-	def startIa(self):
+	def startIa(self, event = None):
 		if messagebox.askyesno('IA', "Voulez-vous que l'IA joue les noirs? (sinon les blancs)"):
 			self.black_player = Computer(self, self.board, -1)
 		else:
@@ -371,30 +373,31 @@ class Interface(tk.Tk):
 				self.playIa(BLACK_PLAYER)
 
 	def playIa(self, player):
-		if player == WHITE_PLAYER:
-			ia = self.white_player
-		else:
-			ia = self.black_player
+		if self.end is False:
+			if player == WHITE_PLAYER:
+				ia = self.white_player
+			else:
+				ia = self.black_player
 
-		coord = ia.findMove()
+			coord = ia.findMove()
 
-		self.canv.select(coord[0], coord[1])
+			self.canv.select(coord[0], coord[1])
 
-		captured = movePiece(self.board, coord[0], coord[1], coord[2], coord[3])
-		self.canv.move(captured[0])
-		ia.move((coord[0], coord[1]),captured[0])
-		self.hasPlayed = True
+			captured = movePiece(self.board, coord[0], coord[1], coord[2], coord[3])
+			self.canv.move(captured[0])
+			ia.move((coord[0], coord[1]),captured[0])
+			self.hasPlayed = True
 
-		# On s'occupe de la capture s'il faut
-		if captured[1]:
-			self.capture(captured)
-			self.rafleIa(ia, captured[0][0], captured[0][1])
-		
-		self.canv.deselect_pawn()
-		# On regarde si le jeu n'est pas terminé.
-		self.end = checkEndOfGame(self.board, player)
-		if self.end is not False:
-			self.show_end()
+			# On s'occupe de la capture s'il faut
+			if captured[1]:
+				self.capture(captured)
+				self.rafleIa(ia, captured[0][0], captured[0][1])
+			
+			# On regarde si le jeu n'est pas terminé.
+			self.end = checkEndOfGame(self.board, player)
+			if self.end is not False:
+				self.show_end()
+			self.canv.deselect_pawn()
 
 	def rafleIa(self, ia, i, j):
 		coord = True
@@ -531,7 +534,7 @@ class Board(tk.Canvas):
 		"""
 		S'occupe de la sélection des pièces lorsqu'un event est généré sur le canvas (clic de souris)
 		"""
-		if not self.parent.get_end():
+		if self.parent.get_end() is False:
 			select_object=self.find_closest(event.x, event.y)
 
 			# On sélectionne une nouvele pièce
@@ -649,9 +652,8 @@ class Board(tk.Canvas):
 
 		pawn = self.find_closest(self.ratio*j+self.ratio//2,self.ratio*i+self.ratio//2)
 		del self.pawn[pawn[0]]
-
 		self.delete(pawn)
-
+		
 	def king(self, i, j):
 		"""
 		Transforme une pièce du damier en dame.

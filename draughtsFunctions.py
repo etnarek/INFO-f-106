@@ -232,7 +232,7 @@ def checkCapture(board, i, j, direction, player, length):
 			j += length * player 
 
 		if 0 <= i < len(board) and 0 <= j < len(board[i]):
-			if board[i][j] == player * -1:
+			if board[i][j] >= player * -1:
 
 				if direction[0] == 'L':
 					i -= player * back
