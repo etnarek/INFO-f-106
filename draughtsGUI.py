@@ -359,12 +359,18 @@ class Interface(tk.Tk):
 		messagebox.showerror("Erreur", strerr(err_code))
 
 	def startIa(self, event = None):
+		"""
+		$%
+		"""
 		if messagebox.askyesno('IA', "Voulez-vous que l'IA joue les noirs? (sinon les blancs)"):
 			self.black_player = Computer(self, self.board, -1)
 		else:
 			self.white_player = Computer(self, self.board, 1)
 
 	def nextPlaying(self):
+		"""
+		$%
+		"""
 		if self.player == WHITE_PLAYER:
 			if self.white_player is not None:
 				self.playIa(WHITE_PLAYER)
@@ -373,6 +379,9 @@ class Interface(tk.Tk):
 				self.playIa(BLACK_PLAYER)
 
 	def playIa(self, player):
+		"""
+		$%
+		"""
 		if self.end is False:
 			if player == WHITE_PLAYER:
 				ia = self.white_player
@@ -400,6 +409,9 @@ class Interface(tk.Tk):
 			self.canv.deselect_pawn()
 
 	def rafleIa(self, ia, i, j):
+		"""
+		$%
+		"""
 		coord = True
 		while self.hasCaptured and coord:
 			coord = ia.rafle(i,j)
@@ -721,9 +733,12 @@ class help_window(tk.Tk):
 
 
 class Computer(object):
-	"""docstring for Computer"""
+	"""
+	$%
+	"""
 	def __init__(self, parent, board, color):
 		"""
+		$%
 		"""
 		self.pawn = []
 		for i in range(len(board)):
@@ -735,6 +750,7 @@ class Computer(object):
 
 	def findMove(self): # changer les nonms des variables pour une mailleur compréhension
 		"""
+		$%
 		"""
 		found = False
 		board = self.parent.get_board()
@@ -778,7 +794,7 @@ class Computer(object):
 					if abs(board[i][j]) == 1:
 						length = 1
 					if checkMove(board, i, j, direction, self.color, length) == NO_ERROR:
-						if (board[i+2][j] == -self.color and board[i][j+2] == 0) or (board[i][j+2] == -self.color and board[i+2][j] == 0):
+						if not self.isCapturable(i, j, direction, board):
 							return i, j, directions, length
 			k+=1
 
@@ -796,8 +812,22 @@ class Computer(object):
 					return i, j, direction, length
 			k+=1
 
+	def isCapturable(self, i, j, direction, board):
+		"""
+		$%
+		"""
+		if (self.color ==WHITE_PLAYER and direction == 'RB') or (self.color == BLACK_PLAYER and direction == 'L'):
+			res =(board[i+2][j] == -self.color and board[i][j+2] == 0) or (board[i][j+2] == -self.color and board[i+2][j] == 0)
+		elif (self.color ==WHITE_PLAYER and direction == 'LB') or (self.color == BLACK_PLAYER and direction == 'R'):
+			res = (board[i+2][j] == -self.color and board[i][j-2] == 0) or (board[i][j-2] == -self.color and board[i+2][j] == 0)
+		elif (self.color ==WHITE_PLAYER and direction == 'R') or (self.color == BLACK_PLAYER and direction == 'LB'):
+			res = (board[i-2][j] == -self.color and board[i][j+2] == 0) or (board[i][j+2] == -self.color and board[i-2][j] == 0)
+		elif (self.color ==WHITE_PLAYER and direction == 'L') or (self.color == BLACK_PLAYER and direction == 'RB'):
+			res = (board[i-2][j] == -self.color and board[i][j-2] == 0) or (board[i][j-2] == -self.color and board[i-2][j] == 0)
+
 	def move(self,start, end):
 		"""
+		$%
 		"""
 		i,j = start
 		next_i, next_j = end
@@ -808,6 +838,7 @@ class Computer(object):
 
 	def remove(self, i, j):
 		"""
+		$%
 		"""
 		found = False
 		k=0
@@ -818,6 +849,9 @@ class Computer(object):
 			k+=1
 
 	def rafle(self, i, j):
+		"""
+		$%
+		"""
 		directions = ['L', 'R', 'LB', 'RB']
 		board = self.parent.get_board()
 		for direction in directions:
