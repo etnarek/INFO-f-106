@@ -16,40 +16,14 @@ class Interface(tk.Tk):
 	Elle est héritée de la classe Tk du module tkinter
 
 	Cette classe comprend les fonctions suivantes:
-		__init__() 			initialise la classe
-		new_game() 			crée un nouveau jeu
-		save_game() 			sauvegarde le jeu
-		load_game() 			charge un jeu sauvegardé
-		help() 				appelle la classe help_window
-		inverse() 			permet un changement de joueur en inversant l'interface
-		move() 				bouge une pièce
-		direction_length() 		retourne la longueur et direction à partir des coordonnées.
-		capture() 			s'occupe des captures
-		king() 				transforme un pion en dame si besoin
-		show_end() 			affiche un message de fin
-		showerror() 			affiche les messages d'erreurs
-		get_player() 			retourne le joueur en cours
-		set_hasPlayed() 		permet de changer la valeur hasPlayed
-		set_hasCaptured() 		permet de changer la valeur de hasCaptured
-		get_hasPlayed() 		permet de savoir ce que vaut hasPlayed
-		get_end() 			permet de savoir si le jeu est fini
+		__init__();	exit();	new_game();	save_game(); load_game(); help(); inverse(); move(); direction_length(); capture(); king(); show_end(); showerror(); startIa(); nextPlaying(); playIa(); rafleIa()
+	Comme getteur:	
+		get_player(); get_hasPlayed(); get_end(); get_board()
+	Comme setter:
+		set_hasPlayed(); set_hasCaptured()
 
 	et a les attributs suivants:
-		board 				contient la matrice du damier
-		player 				contient le joueur en cours
-		hasPlayed 			vrais si le joueur à bougé une pièce
-		hasCaptured 			vrai si le joueur a capturé une pièce
-		end 				vrai si la partie est finie
-		current_player 			référence vers le Label contenant le joueur
-		white_capture_label		référence vers le Label pour les captures blanches
-		black_capture_label		référence vers le Label pour les captures noires
-		white_capture 			contient le nombre de captures blanches
-		black_capture 			contient le nombre de captures noires
-		label_left			liste de référence vers les Label à gauche du canvas
-		label_right 			liste de référence vers les Label à droite du canvas
-		label_up 			liste de référence vers les Label en haut du canvas
-		label_down 			liste de référence vers les Label en bas du canvas
-		canv 				référence vers le damier 			
+		board; player; hasPlayed; hasCaptured; end; current_player; white_capture_label; black_capture_label; white_capture; black_capture; label_left; label_right; label_up; label_down; canv; white_player; black_player
 	"""
 
 	def __init__(self):
@@ -360,7 +334,7 @@ class Interface(tk.Tk):
 
 	def startIa(self, event = None):
 		"""
-		$%
+		Initialise une ia pour la couleur reçue avec la messagebox.
 		"""
 		if messagebox.askyesno('IA', "Voulez-vous que l'IA joue les noirs? (sinon les blancs)"):
 			self.black_player = Computer(self, self.board, -1)
@@ -369,7 +343,7 @@ class Interface(tk.Tk):
 
 	def nextPlaying(self):
 		"""
-		$%
+		Regarde si le suivant devant jouer est l'ordi ou un 'humain'.
 		"""
 		if self.player == WHITE_PLAYER:
 			if self.white_player is not None:
@@ -380,7 +354,7 @@ class Interface(tk.Tk):
 
 	def playIa(self, player):
 		"""
-		$%
+		Fait jouer l'ia.
 		"""
 		if self.end is False:
 			if player == WHITE_PLAYER:
@@ -410,7 +384,7 @@ class Interface(tk.Tk):
 
 	def rafleIa(self, ia, i, j):
 		"""
-		$%
+		Lorsque l'ia rentre en mode rafle (si elle a capturée.)
 		"""
 		coord = True
 		while self.hasCaptured and coord:
@@ -451,28 +425,9 @@ class Board(tk.Canvas):
 	Elle est héritée de la classe Canvas du module tkinter
 
 	Elle contient les fonctions suivantes:
-		__init__() 			charge les différents eléments du canvas
-		draw_Piece() 			s'occupe de dire quand on doit dessiner une pièce avec create_pawn()
-		create_pawn()			dessine les pièces demandées sur le canvas
-		select_piece() 			s'occupe de l'événement généré lorsqu'on clique sur une pièce.
-		select_new_pawn() 		fonction appelée si on sélectionne un pion sans avoir sélectionné avant.
-		deselect_pawn() 		fonction utilisée lors de la désélection d'un pion
-		inverse() 			inverse les pions du canvas
-		move() 				bouge les pièces sur le canvas
-		delete_pawn() 			supprime un pion du canvas
-		king() 				transforme un pion en dame
-
+		__init__(); draw_Piece(); create_pawn(); select_piece(); select_new_pawn(); deselect_pawn(); inverse(); move(); delete_pawn(); king()
 	et a comme attributs:
-		length       			largeur du canvas
-		len_board    			nombre de cases de largeur du damier
-		ratio  				rapport entre length et len_board 
-		parent  			lien vers la fenêtre parente
-		inversed  			est à -1 si le damier est inversé
-		selected_object  		contient l'objet qui est sélectionné est à false par défaut
-		pawn  				dictionnaire contenant toute les pièces dessinées sur le canvas pour les bouger plus facilement.
-		i  				ligne de la dernière pièce selectionnée
-		j  				colonne de la dernière pièce selectionnée
-		player  			joueur de la dernière pièce selectionnée
+		length; len_board; ratio; parent; inversed; selected_object; pawn; i; j; player
 	"""
 
 	def __init__(self,parent, bg, length, board):
@@ -681,7 +636,7 @@ class help_window(tk.Tk):
 	Elle est héritée de la classe Tk du module tkinter
 
 	Elle n'a comme fonction que:
-		__init__() 		charge les différents éléments de la fenêtre d'aide.
+		__init__()
 	"""
 
 	def __init__(self):
@@ -734,11 +689,11 @@ class help_window(tk.Tk):
 
 class Computer(object):
 	"""
-	$%
+	Cette classe sert a creer une pseudo-inteligence artificiele.
 	"""
 	def __init__(self, parent, board, color):
 		"""
-		$%
+		initialisation de l'ia
 		"""
 		self.pawn = []
 		for i in range(len(board)):
@@ -750,7 +705,7 @@ class Computer(object):
 
 	def findMove(self): # changer les nonms des variables pour une mailleur compréhension
 		"""
-		$%
+		Trouve une pièce à bouger.
 		"""
 		found = False
 		board = self.parent.get_board()
@@ -814,7 +769,7 @@ class Computer(object):
 
 	def isCapturable(self, i, j, direction, board):
 		"""
-		$%
+		Regarde si la pièce peut se faire capturée si elle se déplace.
 		"""
 		if (self.color ==WHITE_PLAYER and direction == 'RB') or (self.color == BLACK_PLAYER and direction == 'L'):
 			res =(board[i+2][j] == -self.color and board[i][j+2] == 0) or (board[i][j+2] == -self.color and board[i+2][j] == 0)
@@ -827,7 +782,7 @@ class Computer(object):
 
 	def move(self,start, end):
 		"""
-		$%
+		Change les coordonnées de la pièce dans la liste de pièces appartenant à la classe
 		"""
 		i,j = start
 		next_i, next_j = end
@@ -838,7 +793,7 @@ class Computer(object):
 
 	def remove(self, i, j):
 		"""
-		$%
+		Retire la pièce de la liste de pièces appartenant à la classe.
 		"""
 		found = False
 		k=0
@@ -850,7 +805,7 @@ class Computer(object):
 
 	def rafle(self, i, j):
 		"""
-		$%
+		Essaye de déplacer la pièce lorsque l'ia fait une rafle.
 		"""
 		directions = ['L', 'R', 'LB', 'RB']
 		board = self.parent.get_board()
