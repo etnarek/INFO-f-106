@@ -192,7 +192,7 @@ class Interface(tk.Tk):
 		"""
 		Affiche la fenêtre d'aide.
 		"""
-		self.help_win =help_window()
+		self.help_win =Help_window()
 		self.help_win.mainloop()
 
 	def inverse(self):
@@ -633,7 +633,7 @@ class Board(tk.Canvas):
 		self.itemconfig(pawn, width=5, outline="red")
 
 
-class help_window(tk.Tk):
+class Help_window(tk.Tk):
 	"""
 	Cette classe permet d'afficher la fenêtre d'aide.
 
